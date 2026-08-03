@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Siaga Pakuhaji — Desa Pakuhaji</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Baloo+2:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root{
+    --bg-paper:#FBF3E1;
+    --bg-paper-dim:#F3E4C0;
+    --ink:#2B2016;
+    --ink-soft:#5B4C3A;
+    --clay:#E2622C;
+    --clay-deep:#B84A1E;
+    --ochre:#F0AC3E;
+    --moss:#3F9A5A;
+    --moss-deep:#2C6E3E;
+    --stone:#6E6459;
+    --sky:#2E8FB0;
+    --berry:#C24D6E;
+    --line:#E7D3A2;
+    --radius:22px;
+    --fs-base:16px;
+    --card-bg:#fff;
+    --shadow:0 10px 30px -12px rgba(43,32,22,0.35);
+    --font-display:'Fraunces', Georgia, serif;
+    --font-fun:'Baloo 2', 'Fraunces', sans-serif;
+  }
+  html{font-size:var(--fs-base); scroll-behavior:smooth;}
+  html.text-lg{--fs-base:19px;}
+  html.text-xl{--fs-base:23px;}
+
+  html.contrast{
+    --bg-paper:#000000; --bg-paper-dim:#101010; --ink:#FFFFFF; --ink-soft:#F2E9C9;
+    --clay:#FFB020; --clay-deep:#FFD066; --ochre:#FFD066; --moss:#7CFF9E; --moss-deep:#4CD87A;
+    --stone:#D8D0BC; --sky:#7CD6FF; --berry:#FF9EC4; --line:#5A5A5A; --card-bg:#141414;
+  }
+  html.contrast body{background:#000;}
+  html.contrast .panel,html.contrast .fact-card,html.contrast .checklist li,
+  html.contrast .call-card,html.contrast .tab-btn,html.contrast .kit-item,
+  html.contrast .quiz-card,html.contrast .map-note,html.contrast .contact-item,
+  html.contrast .map-wrap,html.contrast .map-legend,html.contrast .map-tools,
+  html.contrast .disaster-card,html.contrast .disaster-tab-btn,html.contrast .fact-mini{
+    background:var(--card-bg) !important; color:var(--ink) !important; border-color:var(--line) !important;
+  }
+  html.contrast .emergency-section{background:#000 !important; border:1px solid var(--line);}
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg-paper); color:var(--ink);
+    font-family:'Plus Jakarta Sans', system-ui, sans-serif; line-height:1.55;
+    -webkit-font-smoothing:antialiased; transition:background .25s ease, color .25s ease;
+    background-image:
+      radial-gradient(circle at 6px 6px, rgba(188,74,36,0.07) 2px, transparent 2.4px);
+    background-size:34px 34px;
+  }
+  html.contrast body{background-image:none;}
+  h1,h2,h3,.display{ font-family:var(--font-display); font-weight:700; color:var(--ink); line-height:1.12; margin:0; }
+  img,svg{max-width:100%;display:block;}
+  a{color:inherit;}
+  button{font-family:inherit;}
+  input,textarea{font-family:inherit; font-size:1rem;}
+  ::selection{background:var(--ochre); color:var(--ink);}
+
+  .wrap{max-width:1100px; margin:0 auto; padding:0 clamp(18px,4vw,48px);}
+  section{padding:clamp(48px,8vw,96px) 0; scroll-margin-top:80px;}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:.5rem; font-size:0.82rem; font-weight:800;
+    letter-spacing:.1em; text-transform:uppercase; color:#fff; margin-bottom:1rem;
+    background:var(--clay); padding:.4rem .9rem .38rem; border-radius:999px;
+    box-shadow:0 4px 0 0 var(--clay-deep);
+  }
+  html.contrast .eyebrow{ color:#000; box-shadow:0 4px 0 0 var(--ochre); }
+  .eyebrow::before{content:"✦"; display:inline-block; font-size:.8em;}
+
+  /* ===== TOP BAR ===== */
+  .topbar{ position:sticky; top:0; z-index:50; background:rgba(251,243,225,0.94); backdrop-filter:blur(6px); border-bottom:3px solid var(--ink); }
+  html.contrast .topbar{background:rgba(0,0,0,0.94);}
+  .topbar-inner{ max-width:1200px; margin:0 auto; padding:.6rem clamp(14px,3vw,40px); display:flex; align-items:center; justify-content:space-between; gap:.8rem; flex-wrap:wrap; }
+  .brand{display:flex; align-items:center; gap:.6rem; font-family:var(--font-fun); font-weight:800; font-size:1.12rem; white-space:nowrap;}
+  .brand-mark{ width:38px; height:38px; border-radius:12px; background:var(--clay); display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.2rem; flex-shrink:0; box-shadow:0 3px 0 0 var(--clay-deep); }
+  .nav-links{display:flex; gap:.2rem; flex-wrap:wrap;}
+  .nav-links a{ padding:.55rem .8rem; border-radius:10px; font-size:.9rem; font-weight:800; text-decoration:none; color:var(--ink-soft); }
+  .nav-links a.active,.nav-links a:hover{ background:var(--bg-paper-dim); color:var(--clay-deep); }
+  .topbar-actions{display:flex; align-items:center; gap:.4rem; flex-wrap:wrap;}
+  .btn{ display:inline-flex; align-items:center; gap:.5rem; padding:.75rem 1.3rem; border-radius:999px; border:none; cursor:pointer; font-weight:800; font-size:1rem; text-decoration:none; transition:transform .12s ease, box-shadow .12s ease; font-family:var(--font-fun); }
+  .btn:active{transform:translateY(3px); box-shadow:none !important;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-clay{background:var(--clay); color:#fff; box-shadow:0 5px 0 0 var(--clay-deep);}
+  .btn-moss{background:var(--moss); color:#fff; box-shadow:0 5px 0 0 var(--moss-deep);}
+  .btn-sky{background:var(--sky); color:#fff; box-shadow:0 5px 0 0 #1F6B85;}
+  .btn-ghost{background:transparent; border:2.5px solid var(--ink); color:var(--ink); box-shadow:0 5px 0 0 var(--ink);}
+  .btn-ghost:hover{background:var(--ink); color:var(--bg-paper);}
+  .btn-sm{padding:.55rem .95rem; font-size:.86rem; box-shadow:0 3px 0 0 rgba(0,0,0,.25);}
+  .icon-toggle{ width:42px; height:42px; border-radius:50%; border:2.5px solid var(--ink); background:transparent; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 0 0 var(--ink); }
+  .icon-toggle:active{transform:translateY(3px); box-shadow:none;}
+  .icon-toggle.on{background:var(--ink); color:var(--bg-paper);}
+  .fs-toggle{display:flex; border:2.5px solid var(--ink); border-radius:999px; overflow:hidden; box-shadow:0 3px 0 0 var(--ink);}
+  .fs-toggle button{ background:transparent; border:none; padding:.55rem .8rem; cursor:pointer; font-weight:800; color:var(--ink); font-size:.95rem; }
+  .fs-toggle button.active{background:var(--ink); color:var(--bg-paper);}
+  .fs-toggle button:not(:last-child){border-right:2.5px solid var(--ink);}
+  .hamburger-btn{ display:none; width:42px; height:42px; border-radius:12px; border:2.5px solid var(--ink); background:transparent; cursor:pointer; box-shadow:0 3px 0 0 var(--ink); flex-direction:column; align-items:center; justify-content:center; gap:4px; }
+  .hamburger-btn:active{transform:translateY(3px); box-shadow:none;}
+  .hamburger-btn span{ display:block; width:20px; height:2.5px; background:var(--ink); border-radius:2px; transition:transform .2s ease, opacity .2s ease; }
+  .hamburger-btn.open span:nth-child(1){ transform:translateY(6.5px) rotate(45deg); }
+  .hamburger-btn.open span:nth-child(2){ opacity:0; }
+  .hamburger-btn.open span:nth-child(3){ transform:translateY(-6.5px) rotate(-45deg); }
+
+  /* ===== HERO ===== */
+  .hero{padding-top:clamp(36px,7vw,64px); position:relative; overflow:hidden;}
+  .hero-grid{ display:grid; grid-template-columns:1.1fr 1fr; gap:clamp(24px,5vw,56px); align-items:center; }
+  .hero h1{font-size:clamp(2.3rem,5.4vw,3.7rem); letter-spacing:-.01em;}
+  .hero h1 em{font-style:normal; color:var(--clay); position:relative;}
+  .hero p.lead{font-size:1.14rem; color:var(--ink-soft); max-width:46ch; margin-top:1.1rem;}
+  .hero-ctas{display:flex; gap:.9rem; margin-top:1.9rem; flex-wrap:wrap;}
+  .hero-stats{display:flex; gap:1.6rem; margin-top:2.3rem; flex-wrap:wrap;}
+  .stat{ background:var(--card-bg); border:2px solid var(--line); border-radius:16px; padding:.8rem 1.1rem; }
+  .stat b{display:block; font-family:var(--font-fun); font-size:1.8rem; color:var(--clay-deep); font-weight:800;}
+  .stat span{font-size:.82rem; color:var(--stone); font-weight:700;}
+  .strata-card{ background:var(--bg-paper-dim); border-radius:26px; padding:1.2rem; box-shadow:var(--shadow); border:3px solid var(--ink); position:relative; }
+  .strata-caption{font-size:.9rem; color:var(--stone); text-align:center; margin-top:.7rem; font-weight:700;}
+  .crack{ stroke-dasharray:2 6; animation:dash 3.5s linear infinite; }
+  @keyframes dash{ to{ stroke-dashoffset:-160; } }
+  .layer-left{ animation:shiftLeft 4s ease-in-out infinite alternate; transform-origin:center; }
+  .layer-right{ animation:shiftRight 4s ease-in-out infinite alternate; transform-origin:center; }
+  @keyframes shiftLeft{ from{transform:translate(0,0);} to{transform:translate(-3px,2px);} }
+  @keyframes shiftRight{ from{transform:translate(0,0);} to{transform:translate(3px,-2px);} }
+  .pulse-dot{ animation:pulse 2s ease-in-out infinite; transform-origin:center; }
+  @keyframes pulse{ 0%,100%{ transform:scale(1); opacity:1;} 50%{ transform:scale(1.6); opacity:.35;} }
+
+  .speak-btn{ display:inline-flex; align-items:center; gap:.4rem; background:var(--sky); color:#fff; border:none; padding:.55rem 1rem; border-radius:999px; font-weight:800; font-size:.85rem; cursor:pointer; margin-top:1.1rem; box-shadow:0 4px 0 0 #1F6B85; font-family:var(--font-fun); }
+  .speak-btn:active{transform:translateY(3px); box-shadow:none;}
+  .speak-btn.speaking{background:var(--clay); box-shadow:0 4px 0 0 var(--clay-deep);}
+
+  .panel{ background:var(--card-bg); border:3px solid var(--ink); border-radius:var(--radius); padding:clamp(20px,3vw,32px); box-shadow:0 8px 0 0 var(--line); }
+  .fact-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1.1rem; margin-top:2rem;}
+  .fact-card{ background:var(--bg-paper-dim); border-radius:18px; padding:1.5rem 1.3rem; border:2.5px solid var(--ink); }
+  .fact-card b{display:block; font-family:var(--font-fun); font-size:2rem; color:var(--clay-deep); margin-bottom:.25rem; font-weight:800;}
+  .fact-card span{font-size:.9rem; color:var(--ink-soft); font-weight:600;}
+
+  /* ===== PETA INTERAKTIF ===== */
+  .map-wrap{ background:var(--bg-paper-dim); border-radius:26px; padding:clamp(14px,3vw,26px); border:3px solid var(--ink); box-shadow:var(--shadow); }
+  .map-tools{ display:flex; gap:.6rem; flex-wrap:wrap; margin-bottom:1rem; align-items:center; }
+  .map-check{ display:flex; align-items:center; gap:.45rem; background:var(--card-bg); border:2px solid var(--ink); border-radius:999px; padding:.55rem 1rem; font-size:.88rem; font-weight:800; cursor:pointer; }
+  .map-check input{ width:19px; height:19px; accent-color:var(--clay); cursor:pointer; }
+  #leaflet-map{ width:100%; height:440px; border-radius:18px; border:2.5px solid var(--ink); z-index:1; }
+  .map-legend{ display:flex; gap:1.2rem; flex-wrap:wrap; margin-top:1rem; background:var(--card-bg); border:2px solid var(--line); border-radius:16px; padding:.9rem 1.1rem; font-size:.86rem; }
+  .legend-item{ display:flex; align-items:center; gap:.5rem; font-weight:700; color:var(--ink-soft); }
+  .legend-dot{ width:13px; height:13px; border-radius:50%; display:inline-block; border:2px solid #fff; box-shadow:0 0 0 1px var(--ink);}
+  .legend-line{ width:18px; height:3px; display:inline-block; border-radius:2px; }
+  #geo-result{ margin-top:.8rem; font-size:.9rem; font-weight:800; color:var(--clay-deep); display:none; }
+  #geo-result.show{ display:block; }
+  .map-note{ display:flex; gap:.7rem; align-items:flex-start; background:var(--card-bg); border-radius:16px; padding:1.1rem 1.2rem; margin-top:1.2rem; border:2px solid var(--line); font-size:.94rem; color:var(--ink-soft); }
+  .map-note .ico{font-size:1.4rem; flex-shrink:0;}
+  .leaflet-popup-content{ font-family:'Plus Jakarta Sans', sans-serif; font-size:.94rem; }
+  .leaflet-popup-content b{ font-family:var(--font-fun); font-size:1.05rem; }
+
+  /* ===== TABS ===== */
+  .tabs-nav{ display:flex; gap:.7rem; flex-wrap:wrap; margin-bottom:1.7rem; }
+  .tab-btn{ padding:.9rem 1.4rem; border-radius:16px; border:2.5px solid var(--ink); background:var(--card-bg); font-weight:800; font-size:1.05rem; cursor:pointer; color:var(--ink-soft); transition:all .15s ease; display:flex; align-items:center; gap:.55rem; font-family:var(--font-fun); box-shadow:0 4px 0 0 var(--ink);}
+  .tab-btn:active{transform:translateY(4px); box-shadow:none;}
+  .tab-btn.active{ background:var(--clay); color:#fff; box-shadow:0 4px 0 0 var(--clay-deep); }
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; animation:fadeUp .4s ease; }
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  .checklist{ display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; list-style:none; padding:0; margin:0; }
+  .checklist li{ display:flex; gap:.9rem; align-items:flex-start; background:var(--card-bg); border:2.5px solid var(--line); border-radius:16px; padding:1.1rem 1.2rem; font-size:1.04rem; transition:border-color .15s ease, transform .15s ease; }
+  .checklist li:hover{ border-color:var(--ochre); transform:translateY(-2px); }
+  .checklist .ico{ font-size:1.6rem; flex-shrink:0; background:var(--bg-paper-dim); width:2.4rem; height:2.4rem; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+
+  /* ===== BENCANA LAIN ===== */
+  .disaster-tabs-nav{ display:flex; gap:.7rem; flex-wrap:wrap; margin-bottom:1.7rem; }
+  .disaster-tab-btn{ padding:.85rem 1.3rem; border-radius:16px; border:2.5px solid var(--ink); background:var(--card-bg); font-weight:800; font-size:1rem; cursor:pointer; color:var(--ink-soft); transition:all .15s ease; display:flex; align-items:center; gap:.5rem; font-family:var(--font-fun); box-shadow:0 4px 0 0 var(--ink); }
+  .disaster-tab-btn:active{transform:translateY(4px); box-shadow:none;}
+  .disaster-tab-btn.active{ color:#fff; }
+  .disaster-tab-btn[data-color="fire"].active{ background:var(--clay); box-shadow:0 4px 0 0 var(--clay-deep); }
+  .disaster-tab-btn[data-color="land"].active{ background:#8A5A32; box-shadow:0 4px 0 0 #5F3C1F; }
+  .disaster-tab-btn[data-color="flood"].active{ background:var(--sky); box-shadow:0 4px 0 0 #1F6B85; }
+  .disaster-tab-btn[data-color="wind"].active{ background:var(--berry); box-shadow:0 4px 0 0 #8E3350; }
+  .disaster-panel{ display:none; }
+  .disaster-panel.active{ display:block; animation:fadeUp .4s ease; }
+  .disaster-card{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(20px,3vw,36px); align-items:center; background:var(--card-bg); border:3px solid var(--ink); border-radius:var(--radius); padding:clamp(20px,3vw,32px); box-shadow:0 8px 0 0 var(--line); }
+  .disaster-illust{ background:var(--bg-paper-dim); border-radius:20px; padding:1rem; border:2.5px solid var(--ink); }
+  .disaster-text h3{ font-size:clamp(1.35rem,2.6vw,1.7rem); margin-bottom:.7rem; }
+  .disaster-text p{ color:var(--ink-soft); font-size:1.02rem; }
+  .fact-mini-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:.7rem; margin-top:1.3rem; }
+  .fact-mini{ background:var(--bg-paper-dim); border:2px solid var(--ink); border-radius:14px; padding:.85rem .9rem; }
+  .fact-mini b{ display:block; font-family:var(--font-fun); font-size:1.15rem; color:var(--clay-deep); font-weight:800; }
+  .fact-mini span{ font-size:.78rem; color:var(--ink-soft); font-weight:700; }
+  .disaster-checklist-wrap{ margin-top:2rem; }
+  .disaster-checklist-wrap h4{ font-family:var(--font-fun); font-size:1.15rem; margin-bottom:1rem; }
+  .mini-checklist{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(2,1fr); gap:.8rem; }
+  .mini-checklist li{ display:flex; gap:.7rem; align-items:flex-start; background:var(--bg-paper-dim); border:2px solid var(--line); border-radius:14px; padding:.9rem 1rem; font-size:.96rem; }
+  .mini-checklist li b{ display:block; font-size:.76rem; text-transform:uppercase; letter-spacing:.06em; color:var(--clay-deep); margin-bottom:.15rem; }
+
+  /* fire animation */
+  .flame{ animation:flameFlicker 1.1s ease-in-out infinite alternate; transform-origin:bottom center; }
+  .flame.f2{ animation-delay:.2s; animation-duration:1.3s; }
+  .flame.f3{ animation-delay:.4s; animation-duration:.9s; }
+  @keyframes flameFlicker{ 0%{ transform:scaleY(1) scaleX(1) translateY(0);} 50%{ transform:scaleY(1.08) scaleX(.95) translateY(-3px);} 100%{ transform:scaleY(.94) scaleX(1.04) translateY(1px);} }
+  .smoke{ animation:smokeRise 3.5s ease-in infinite; }
+  .smoke.s2{ animation-delay:1.1s; }
+  .smoke.s3{ animation-delay:2.2s; }
+  @keyframes smokeRise{ 0%{ transform:translateY(0) scale(.6); opacity:0;} 15%{opacity:.5;} 100%{ transform:translateY(-90px) scale(1.5); opacity:0;} }
+  .tree-burn{ animation:treeSway 2.4s ease-in-out infinite alternate; transform-origin:bottom center; }
+  @keyframes treeSway{ from{transform:rotate(-2deg);} to{transform:rotate(2deg);} }
+
+  /* landslide animation */
+  .slide-rock{ animation:rockFall 2.6s ease-in infinite; }
+  .slide-rock.r2{ animation-delay:.6s; }
+  .slide-rock.r3{ animation-delay:1.3s; }
+  @keyframes rockFall{ 0%{ transform:translate(0,0) rotate(0deg); opacity:1;} 85%{opacity:1;} 100%{ transform:translate(-34px,58px) rotate(-35deg); opacity:0;} }
+  .slide-crack{ stroke-dasharray:3 5; animation:dash 3s linear infinite; }
+  .slide-soil{ animation:soilShift 3.4s ease-in-out infinite alternate; transform-origin:bottom left; }
+  @keyframes soilShift{ from{transform:translate(0,0);} to{transform:translate(-4px,3px);} }
+
+  /* flood animation */
+  .wave{ animation:waveMove 4s linear infinite; }
+  .wave.w2{ animation-duration:5.5s; animation-direction:reverse; opacity:.7; }
+  @keyframes waveMove{ from{transform:translateX(0);} to{transform:translateX(-120px);} }
+  .flood-level{ animation:floodRise 5s ease-in-out infinite alternate; }
+  @keyframes floodRise{ from{transform:translateY(0);} to{transform:translateY(-14px);} }
+  .float-debris{ animation:debrisBob 2.6s ease-in-out infinite alternate; }
+  @keyframes debrisBob{ from{transform:translateY(0) rotate(-2deg);} to{transform:translateY(-6px) rotate(2deg);} }
+
+  /* wind animation */
+  .spiral{ animation:spiralSpin 3s linear infinite; transform-origin:center; }
+  @keyframes spiralSpin{ to{ transform:rotate(360deg); } }
+  .wind-tree{ animation:windSway 1.1s ease-in-out infinite alternate; transform-origin:bottom center; }
+  @keyframes windSway{ from{transform:rotate(-9deg);} to{transform:rotate(9deg);} }
+  .wind-leaf{ animation:leafFly 2.2s linear infinite; }
+  @keyframes leafFly{ 0%{ transform:translate(0,0) rotate(0deg); opacity:0;} 10%{opacity:1;} 100%{ transform:translate(140px,-30px) rotate(260deg); opacity:0;} }
+
+  @media (max-width:900px){
+    .disaster-card{grid-template-columns:1fr;}
+    .fact-mini-grid{grid-template-columns:1fr 1fr;}
+    .mini-checklist{grid-template-columns:1fr;}
+  }
+
+  /* ===== CEK KESIAPAN ===== */
+  .readiness-wrap{ display:grid; grid-template-columns:1fr 260px; gap:1.6rem; margin-top:1.8rem; align-items:start; }
+  .kit-list{ list-style:none; margin:0; padding:0; display:grid; gap:.75rem; }
+  .kit-item{ display:flex; align-items:center; gap:.85rem; background:var(--card-bg); border:2.5px solid var(--line); border-radius:14px; padding:1rem 1.1rem; cursor:pointer; font-size:1.03rem; font-weight:600; transition:transform .1s ease; }
+  .kit-item:hover{ transform:translateX(3px); }
+  .kit-item input{ width:24px; height:24px; accent-color:var(--moss); flex-shrink:0; cursor:pointer; }
+  .kit-item.checked{ background:#E7F5EA; border-color:var(--moss); }
+  html.contrast .kit-item.checked{ background:#0e2a14 !important; border-color:var(--moss) !important; }
+  .kit-item.checked span.txt{ text-decoration:line-through; opacity:.7; }
+  .score-card{ background:var(--ink); color:#fff; border-radius:22px; padding:1.5rem; text-align:center; position:sticky; top:90px; border:3px solid var(--ink); }
+  html.contrast .score-card{ background:#141414; border:1px solid var(--line); }
+  .score-ring{ width:120px; height:120px; margin:0 auto .8rem; }
+  .score-num{ font-family:var(--font-fun); font-size:2rem; font-weight:800; }
+  .score-label{ font-size:.87rem; color:#D9CFB8; margin-top:.3rem; font-weight:700; }
+  .score-msg{ font-size:.88rem; margin-top:1rem; font-weight:700; }
+
+  /* ===== SIMULASI ===== */
+  .sim-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:2rem; }
+  .sim-card{ background:var(--card-bg); border:3px solid var(--ink); border-radius:22px; padding:1.7rem; box-shadow:0 6px 0 0 var(--line); }
+  .sim-card h3{ font-size:1.4rem; margin-bottom:.5rem; font-family:var(--font-fun); }
+  .sim-card p{ color:var(--ink-soft); font-size:.98rem; }
+  .sim-stage{ margin-top:1.3rem; min-height:100px; background:var(--bg-paper-dim); border-radius:16px; padding:1.1rem; display:flex; align-items:center; justify-content:center; text-align:center; font-weight:800; font-size:1.1rem; border:2px dashed var(--ochre); }
+  .timer-display{ font-family:var(--font-fun); font-size:2.8rem; text-align:center; margin:1rem 0; color:var(--clay-deep); font-weight:800; }
+  .sim-actions{ display:flex; gap:.7rem; flex-wrap:wrap; margin-top:1.1rem; }
+  .best-time{ text-align:center; font-size:.92rem; color:var(--stone); font-weight:800; margin-top:.7rem; }
+  body.shaking .wrap{ animation:shake .12s linear infinite; }
+  @keyframes shake{ 0%{transform:translate(0,0) rotate(0);} 25%{transform:translate(3px,-2px) rotate(.3deg);} 50%{transform:translate(-3px,2px) rotate(-.3deg);} 75%{transform:translate(2px,3px) rotate(.2deg);} 100%{transform:translate(0,0) rotate(0);} }
+
+  /* ===== KUIS ===== */
+  .quiz-card{ background:var(--card-bg); border:3px solid var(--ink); border-radius:24px; padding:1.8rem; margin-top:1.9rem; box-shadow:0 8px 0 0 var(--line); }
+  .quiz-q{ font-weight:800; font-size:1.18rem; margin-bottom:1.1rem; font-family:var(--font-fun); }
+  .quiz-opts{ display:grid; gap:.7rem; }
+  .quiz-opt{ display:flex; align-items:center; gap:.7rem; padding:.95rem 1.1rem; border-radius:14px; border:2.5px solid var(--line); cursor:pointer; font-weight:700; background:var(--card-bg); transition:transform .1s ease, border-color .1s ease; }
+  .quiz-opt:hover{ border-color:var(--ochre); transform:translateX(3px); }
+  .quiz-opt.correct{ border-color:var(--moss); background:#E7F5EA; }
+  .quiz-opt.wrong{ border-color:var(--clay); background:#FCE6DA; }
+  html.contrast .quiz-opt.correct{ background:#0e2a14 !important; }
+  html.contrast .quiz-opt.wrong{ background:#3a1305 !important; }
+  .quiz-explain{ margin-top:1rem; font-size:.92rem; color:var(--ink-soft); display:none; background:var(--bg-paper-dim); border-radius:12px; padding:.9rem 1rem; }
+  .quiz-explain.show{ display:block; }
+  .quiz-progress{ display:flex; justify-content:space-between; align-items:center; margin-bottom:.6rem; font-size:.9rem; font-weight:800; color:var(--stone); }
+  .quiz-result{ text-align:center; padding:2.2rem; display:none; }
+  .quiz-result.show{ display:block; }
+  .quiz-result .big{ font-family:var(--font-fun); font-size:2.6rem; color:var(--clay-deep); font-weight:800; }
+
+  /* ===== KONTAK ===== */
+  .emergency-section{ background:var(--ink); color:var(--bg-paper); border-radius:30px; margin:0 auto; border:3px solid var(--ink); }
+  html.contrast .emergency-section{ background:#000 !important; }
+  .emergency-section .eyebrow{ background:var(--ochre); color:var(--ink); box-shadow:0 4px 0 0 #B9822C; }
+  .emergency-section h2{ color:#fff; }
+  html.contrast .emergency-section h2{ color:var(--ink) !important; }
+  .emergency-section p.lead{ color:#D9CFB8; }
+  .call-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.1rem; margin-top:2rem; }
+  .call-card{ background:#3A2E20; border-radius:20px; padding:1.5rem; text-decoration:none; color:#fff; display:flex; flex-direction:column; gap:.5rem; border:2px solid #4A3D2C; transition:transform .15s ease, background .2s ease; position:relative; overflow:hidden; }
+  .call-card:hover{ transform:translateY(-4px) scale(1.02); background:#4A3D2C; }
+  .call-card .num{ font-family:var(--font-fun); font-size:2.3rem; font-weight:800; color:var(--ochre); }
+  .call-card .role{ font-weight:800; font-size:1.08rem; }
+  .call-card .desc{ font-size:.86rem; color:#C9BCA4; }
+  .call-card .tap{ margin-top:.4rem; font-size:.82rem; font-weight:800; color:var(--ochre); }
+  .ring{ position:absolute; top:1.1rem; right:1.1rem; width:14px; height:14px; border-radius:50%; background:var(--moss); }
+  .ring::after{ content:""; position:absolute; inset:0; border-radius:50%; background:var(--moss); animation:pulse 1.8s ease-in-out infinite; }
+  .local-panel{ margin-top:1.5rem; background:#2E2417; border:2px dashed #6B5A3E; border-radius:20px; padding:1.5rem; }
+  html.contrast .local-panel{ background:#141414 !important; border-color:var(--line) !important; }
+  .local-panel h3{ color:#fff; font-size:1.2rem; margin-bottom:.3rem; font-family:var(--font-fun); }
+  html.contrast .local-panel h3{ color:var(--ink) !important; }
+  .local-panel p.hint{ color:#C9BCA4; font-size:.86rem; margin-bottom:1.1rem; }
+  .contact-form{ display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:.6rem; }
+  .contact-form input{ padding:.75rem .95rem; border-radius:12px; border:2px solid #5A4A34; background:#241C12; color:#fff; font-size:.94rem; }
+  html.contrast .contact-form input{ background:#0a0a0a !important; color:#fff !important; border-color:var(--line) !important; }
+  .contact-list{ list-style:none; padding:0; margin:1rem 0 0; display:grid; gap:.65rem; }
+  .contact-item{ display:flex; align-items:center; justify-content:space-between; gap:.7rem; background:#3A2E20; border-radius:14px; padding:.85rem 1.05rem; flex-wrap:wrap; }
+  .contact-item .info b{ display:block; font-size:1rem; }
+  .contact-item .info span{ font-size:.83rem; color:#C9BCA4; }
+  .contact-item a.call-mini{ background:var(--moss); color:#fff; padding:.42rem .85rem; border-radius:999px; font-weight:800; font-size:.84rem; text-decoration:none; }
+  .contact-item button.del{ background:none; border:none; color:#E58B70; cursor:pointer; font-size:1.05rem; }
+  .empty-hint{ color:#9C8B6E; font-size:.87rem; font-style:italic; padding:.6rem 0; }
+
+  .titik-wrap{ margin-top:1.9rem; }
+  .titik-form{ display:flex; gap:.6rem; flex-wrap:wrap; margin-top:1rem; }
+  .titik-form input{ flex:1; min-width:200px; padding:.8rem 1.05rem; border-radius:12px; border:2px solid var(--line); }
+  .titik-list{ list-style:none; padding:0; margin:1.2rem 0 0; display:grid; gap:.75rem; }
+  .titik-list li{ display:flex; align-items:center; justify-content:space-between; gap:.8rem; background:var(--card-bg); border:2.5px solid var(--line); border-radius:14px; padding:.95rem 1.15rem; font-weight:700; }
+  .titik-list li button{ background:none; border:none; color:var(--clay); cursor:pointer; font-size:1.05rem; }
+
+  .fab-emergency{ position:fixed; bottom:22px; right:22px; z-index:60; background:var(--clay); color:#fff; border-radius:999px; padding:1.05rem 1.4rem; display:flex; align-items:center; gap:.6rem; text-decoration:none; font-weight:800; box-shadow:0 6px 0 0 var(--clay-deep); animation:pulse 2.4s ease-in-out infinite; font-family:var(--font-fun); font-size:1.02rem; }
+  .fab-emergency span.ico{ font-size:1.35rem; }
+  .fab-top{ position:fixed; bottom:22px; left:22px; z-index:60; width:50px; height:50px; border-radius:50%; background:var(--ink); color:var(--bg-paper); border:none; cursor:pointer; font-size:1.2rem; box-shadow:0 4px 0 0 var(--line); display:none; align-items:center; justify-content:center; }
+  .fab-top.show{ display:flex; }
+
+  footer{ padding:2.8rem 0 3rem; text-align:center; color:var(--stone); font-size:.92rem; }
+  footer b{ color:var(--ink); font-family:var(--font-fun); }
+
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;}
+    .fact-grid{grid-template-columns:1fr;}
+    .checklist{grid-template-columns:1fr;}
+    .call-grid{grid-template-columns:1fr;}
+    .sim-grid{grid-template-columns:1fr;}
+    .readiness-wrap{grid-template-columns:1fr;}
+    .score-card{position:static;}
+    .contact-form{grid-template-columns:1fr;}
+    .nav-links{
+      display:none; position:absolute; top:100%; left:0; right:0;
+      flex-direction:column; gap:0; background:var(--bg-paper); border-bottom:3px solid var(--ink);
+      padding:.6rem clamp(14px,3vw,40px) 1rem; box-shadow:0 12px 24px -10px rgba(43,32,22,0.35);
+    }
+    html.contrast .nav-links{background:#000;}
+    .nav-links.open{display:flex;}
+    .nav-links a{ padding:.9rem .5rem; border-radius:0; border-bottom:1px solid var(--line); font-size:1rem; }
+    .nav-links a:last-child{border-bottom:none;}
+    .hamburger-btn{display:flex;}
+    #leaflet-map{height:320px;}
+    .topbar-inner{gap:.5rem;}
+    .fs-toggle button{padding:.5rem .65rem; font-size:.85rem;}
+    .hero-ctas .btn{flex:1 1 auto; justify-content:center;}
+    .sos-call-grid{grid-template-columns:1fr;}
+    .contact-item{flex-direction:column; align-items:flex-start;}
+    .disaster-tabs-nav{gap:.5rem;}
+    .disaster-tab-btn{padding:.7rem 1rem; font-size:.92rem;}
+  }
+  @media (min-width:901px){
+    .hamburger-btn{display:none !important;}
+  }
+  @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important;} }
+
+  /* ===== SOS ===== */
+  .sos-pulse{ animation:sosPulseBtn 1.8s ease-in-out infinite; }
+  @keyframes sosPulseBtn{ 0%,100%{ box-shadow:0 5px 0 0 var(--clay-deep), 0 0 0 0 rgba(226,98,44,.55);} 50%{ box-shadow:0 5px 0 0 var(--clay-deep), 0 0 0 8px rgba(226,98,44,0);} }
+
+  .sos-cta{ display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap; background:#3A2E20; border:3px solid var(--clay); border-radius:24px; padding:1.5rem 1.7rem; margin-top:1.8rem; }
+  html.contrast .sos-cta{ background:#141414 !important; }
+  .sos-cta .txt b{ display:block; font-family:var(--font-fun); font-size:1.25rem; color:#fff; margin-bottom:.2rem; }
+  .sos-cta .txt span{ font-size:.9rem; color:#C9BCA4; }
+  .btn-sos-big{ background:var(--clay); color:#fff; font-size:1.15rem; padding:1rem 1.8rem; box-shadow:0 6px 0 0 var(--clay-deep); animation:sosPulseBtn 1.8s ease-in-out infinite; white-space:nowrap; }
+
+  .sos-overlay{ position:fixed; inset:0; z-index:100; background:rgba(20,14,8,0.72); backdrop-filter:blur(3px); display:none; align-items:center; justify-content:center; padding:18px; }
+  .sos-overlay.show{ display:flex; }
+  .sos-modal{ background:var(--card-bg); border-radius:26px; border:3px solid var(--ink); max-width:560px; width:100%; max-height:88vh; overflow-y:auto; padding:clamp(20px,4vw,32px); position:relative; box-shadow:0 20px 50px -12px rgba(0,0,0,.5); }
+  .sos-modal-head{ display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:.4rem; }
+  .sos-modal-head h3{ font-family:var(--font-fun); font-size:1.5rem; color:var(--clay-deep); display:flex; align-items:center; gap:.5rem; }
+  .sos-close{ width:38px; height:38px; border-radius:50%; border:2.5px solid var(--ink); background:var(--card-bg); cursor:pointer; font-size:1.1rem; flex-shrink:0; }
+  .sos-close:active{ transform:translateY(2px); }
+  .sos-modal p.sub{ color:var(--ink-soft); font-size:.95rem; margin:.3rem 0 1.1rem; }
+  .sos-block{ background:var(--bg-paper-dim); border:2px solid var(--line); border-radius:16px; padding:1.1rem 1.2rem; margin-bottom:1.1rem; }
+  .sos-block h4{ font-family:var(--font-fun); font-size:1.02rem; margin-bottom:.5rem; color:var(--ink); }
+  .sos-call-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:.7rem; }
+  @media (max-width:480px){ .sos-call-grid{ grid-template-columns:1fr; } }
+  .sos-call-mini{ display:flex; align-items:center; gap:.6rem; background:var(--card-bg); border:2px solid var(--ink); border-radius:14px; padding:.75rem .9rem; text-decoration:none; color:var(--ink); font-weight:700; box-shadow:0 3px 0 0 var(--line); }
+  .sos-call-mini:active{ transform:translateY(3px); box-shadow:none; }
+  .sos-call-mini .n{ font-family:var(--font-fun); font-weight:800; font-size:1.15rem; color:var(--clay-deep); }
+  .sos-call-mini .l{ font-size:.78rem; color:var(--stone); display:block; }
+  .sos-contact-row{ display:flex; align-items:center; justify-content:space-between; gap:.7rem; background:var(--card-bg); border:2px solid var(--line); border-radius:12px; padding:.7rem .9rem; margin-bottom:.6rem; flex-wrap:wrap; }
+  .sos-contact-row .info b{ display:block; font-size:.94rem; }
+  .sos-contact-row .info span{ font-size:.78rem; color:var(--stone); }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="brand-mark">⛰️</span> Siaga Pakuhaji</div>
+    <nav class="nav-links" id="nav-links">
+      <a href="#edukasi">Edukasi</a>
+      <a href="#peta">Peta</a>
+      <a href="#panduan">Panduan</a>
+      <a href="#bencana-lain">Bencana Lain</a>
+      <a href="#kesiapan">Cek Kesiapan</a>
+      <a href="#simulasi">Simulasi</a>
+      <a href="#kuis">Kuis</a>
+      <a href="#darurat">Darurat</a>
+    </nav>
+    <div class="topbar-actions">
+      <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobileNav()" aria-label="Buka menu navigasi" aria-expanded="false"><span></span><span></span><span></span></button>
+      <button class="icon-toggle" id="contrast-btn" onclick="toggleContrast()" title="Mode kontras tinggi">◐</button>
+      <div class="fs-toggle" role="group" aria-label="Ukuran teks">
+        <button id="fs-a" onclick="setFontSize('base',this)" class="active" title="Teks normal">A</button>
+        <button id="fs-b" onclick="setFontSize('lg',this)" title="Teks besar">A+</button>
+        <button id="fs-c" onclick="setFontSize('xl',this)" title="Teks sangat besar">A++</button>
+      </div>
+      <button class="btn btn-clay btn-sm sos-pulse" onclick="openSOS()">🆘 SOS</button>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="beranda">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Desa Pakuhaji · Kec. Ngamprah · Kab. Bandung Barat</div>
+      <h1>Siaga Pakuhaji — kenali <em>Sesar Lembang</em> &amp; bencana lain, siap sejak dari rumah.</h1>
+      <p class="lead" id="hero-text">Website ini dibuat untuk warga Desa Pakuhaji dari anak-anak sampai lansia — supaya semua paham apa itu Sesar Lembang, potensi kebakaran hutan dan lahan, tanah longsor, banjir, serta bencana lain di sekitar kita, ke mana harus mengungsi, dan siapa yang harus dihubungi saat bencana terjadi. Semua fitur di website ini bisa dipakai langsung: peta interaktif, cek kesiapan keluarga, latihan simulasi, kuis, sampai tombol telepon darurat.</p>
+      <button class="speak-btn" onclick="speakSection('hero-text', this)">🔊 Dengarkan</button>
+      <div class="hero-ctas">
+        <a href="#edukasi" class="btn btn-clay">📖 Mulai Belajar</a>
+        <a href="#bencana-lain" class="btn btn-moss">🔥 Bencana Lain</a>
+        <a href="#peta" class="btn btn-sky">🗺️ Lihat Peta</a>
+        <a href="#darurat" class="btn btn-ghost">🚨 Nomor Darurat</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><b>29 km</b><span>Panjang jalur Sesar Lembang</span></div>
+        <div class="stat"><b>M6,8–7,0</b><span>Potensi kekuatan gempa maksimum</span></div>
+        <div class="stat"><b>4</b><span>Jenis bencana yang dibahas di sini</span></div>
+      </div>
+    </div>
+    <div class="strata-card">
+      <svg viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustrasi lapisan tanah dengan retakan sesar">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#FCE7B8"/>
+            <stop offset="1" stop-color="#FBF3E1"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="420" height="120" fill="url(#sky)"/>
+        <circle cx="365" cy="35" r="22" fill="#F0AC3E" opacity="0.9"/>
+        <g class="layer-left">
+          <rect x="0" y="110" width="205" height="42" fill="#F0AC3E"/>
+          <rect x="0" y="152" width="205" height="46" fill="#E2622C"/>
+          <rect x="0" y="198" width="205" height="50" fill="#9C6A34"/>
+          <rect x="0" y="248" width="205" height="72" fill="#5B4023"/>
+        </g>
+        <g class="layer-right">
+          <rect x="215" y="122" width="205" height="42" fill="#F0AC3E"/>
+          <rect x="215" y="164" width="205" height="46" fill="#E2622C"/>
+          <rect x="215" y="210" width="205" height="50" fill="#9C6A34"/>
+          <rect x="215" y="260" width="205" height="60" fill="#5B4023"/>
+        </g>
+        <path d="M0 110 Q105 100 205 112 Q260 118 420 122" fill="none" stroke="#3F9A5A" stroke-width="7" stroke-linecap="round"/>
+        <path class="crack" d="M210 110 L198 150 L216 185 L200 225 L214 260 L204 320" fill="none" stroke="#FBF3E1" stroke-width="5" stroke-linecap="round"/>
+        <g>
+          <rect x="40" y="86" width="28" height="22" fill="#FBF3E1" stroke="#2B2016" stroke-width="2.5" rx="2"/>
+          <polygon points="33,86 54,68 75,86" fill="#E2622C" stroke="#2B2016" stroke-width="2.5"/>
+          <rect x="300" y="96" width="28" height="22" fill="#FBF3E1" stroke="#2B2016" stroke-width="2.5" rx="2"/>
+          <polygon points="293,96 314,78 335,96" fill="#3F9A5A" stroke="#2B2016" stroke-width="2.5"/>
+        </g>
+        <circle class="pulse-dot" cx="205" cy="112" r="6" fill="#E2622C"/>
+      </svg>
+      <p class="strata-caption">Ilustrasi sederhana: garis sesar adalah retakan di kerak bumi yang bisa bergeser pelan-pelan lalu memicu getaran.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EDUKASI -->
+<section id="edukasi">
+  <div class="wrap">
+    <div class="eyebrow">Edukasi</div>
+    <h2 style="font-size:clamp(1.8rem,3.6vw,2.6rem); max-width:22ch;">Apa itu Sesar Lembang, dan kenapa Desa Pakuhaji perlu waspada?</h2>
+    <div class="panel" style="margin-top:1.8rem;">
+      <p style="font-size:1.08rem; max-width:70ch;" id="edu-text">Sesar Lembang adalah retakan aktif di kerak bumi sepanjang sekitar 29 km, membentang dari Padalarang hingga Sumedang, melewati wilayah Kabupaten Bandung Barat termasuk Kecamatan Ngamprah dan Cisarua. Desa Pakuhaji sendiri berada di Kecamatan Ngamprah, salah satu wilayah yang dilintasi segmen aktif sesar ini. Sesar Lembang bergerak perlahan, sekitar 2 sampai 5 milimeter per tahun, namun pergerakan yang terkumpul selama ratusan tahun bisa memicu gempa besar. Catatan gempa purba menunjukkan sesar ini pernah memicu gempa hingga magnitudo 6,5 sampai 7. Karena itu, kesiapsiagaan warga jauh lebih penting daripada rasa takut berlebihan.</p>
+      <button class="speak-btn" onclick="speakSection('edu-text', this)">🔊 Dengarkan Penjelasan</button>
+      <div class="fact-grid">
+        <div class="fact-card"><b>Ngamprah–Cisarua</b><span>Segmen Cimeta &amp; Cipogor, bagian sesar yang paling aktif saat ini</span></div>
+        <div class="fact-card"><b>V–VI MMI</b><span>Skala guncangan yang bisa membuat plester dinding rontok &amp; barang jatuh</span></div>
+        <div class="fact-card"><b>Tak bisa diprediksi</b><span>Waktu gempa tidak bisa dipastikan — kesiapsiagaan harus dimulai dari sekarang</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PETA INTERAKTIF -->
+<section id="peta">
+  <div class="wrap">
+    <div class="eyebrow">Pemetaan</div>
+    <h2 style="font-size:clamp(1.8rem,3.6vw,2.6rem); max-width:24ch;">Peta Interaktif Jalur Sesar Lembang</h2>
+    <p class="lead" style="margin-top:.6rem; max-width:60ch;">Geser dan perbesar peta, ketuk penanda untuk info wilayah, atau tekan "Temukan Lokasi Saya" untuk melihat jarak Anda dari Desa Pakuhaji.</p>
+
+    <div class="map-wrap" style="margin-top:1.4rem;">
+      <div class="map-tools">
+        <label class="map-check"><input type="checkbox" id="toggle-fault" checked onchange="toggleFaultLine()"> 〰️ Jalur Sesar</label>
+        <label class="map-check"><input type="checkbox" id="toggle-towns" checked onchange="toggleTowns()"> 📍 Wilayah Sekitar</label>
+        <button class="btn btn-sky btn-sm" onclick="locateMe()">🧭 Temukan Lokasi Saya</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetMapView()">↺ Reset Tampilan</button>
+      </div>
+      <div id="leaflet-map"></div>
+      <div id="geo-result"></div>
+      <div class="map-legend">
+        <div class="legend-item"><span class="legend-line" style="background:#E2622C;"></span> Perkiraan arah jalur Sesar Lembang</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#B84A1E;"></span> Desa Pakuhaji (Kec. Ngamprah)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#6E6459;"></span> Wilayah / kecamatan lain</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#2E8FB0;"></span> Lokasi Anda (jika diaktifkan)</div>
+      </div>
+      <div class="map-note">
+        <span class="ico">ℹ️</span>
+        <p style="margin:0;"><b>Peta ini bersifat ilustratif</b> — garis jalur sesar digambar mendekati arah umum berdasarkan laporan BMKG/BRIN, bukan data GIS resmi bergaris presisi tinggi. Desa Pakuhaji berada di Kecamatan Ngamprah, wilayah yang bersama Kecamatan Cisarua dilintasi segmen aktif Sesar Lembang (Cimeta &amp; Cipogor). Untuk peta geologi resmi, hubungi BPBD Kabupaten Bandung Barat, PVMBG, atau BMKG.</p>
+      </div>
+    </div>
+
+    <!-- Titik kumpul editable -->
+    <div class="titik-wrap">
+      <h3 style="font-size:1.3rem;">📍 Titik Kumpul &amp; Jalur Evakuasi Desa Pakuhaji</h3>
+      <p style="color:var(--ink-soft); max-width:60ch;">Tambahkan lokasi titik kumpul yang sebenarnya di lingkungan Anda, supaya warga tahu ke mana harus berkumpul saat evakuasi.</p>
+      <div class="titik-form">
+        <input type="text" id="titik-input" placeholder="Contoh: Lapangan Balai Desa Pakuhaji">
+        <button class="btn btn-clay" onclick="addTitik()">+ Tambah Titik</button>
+      </div>
+      <ul class="titik-list" id="titik-list"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- SEBELUM SAAT SESUDAH -->
+<section id="panduan">
+  <div class="wrap">
+    <div class="eyebrow">Panduan Keselamatan</div>
+    <h2 style="font-size:clamp(1.8rem,3.6vw,2.6rem); max-width:24ch;">Harus ngapain kalau gempa terjadi?</h2>
+    <p class="lead" style="margin-top:.6rem;">Pilih salah satu tahapan di bawah ini. Cocok dibaca bersama keluarga, termasuk anak-anak dan orang tua.</p>
+
+    <div style="margin-top:2rem;">
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="sebelum" onclick="showTab('sebelum',this)">🎒 Sebelum Gempa</button>
+        <button class="tab-btn" data-tab="saat" onclick="showTab('saat',this)">🏃 Saat Gempa</button>
+        <button class="tab-btn" data-tab="sesudah" onclick="showTab('sesudah',this)">🤝 Sesudah Gempa</button>
+      </div>
+
+      <div class="tab-panel active" id="tab-sebelum">
+        <button class="speak-btn" onclick="speakList('tab-sebelum', this)">🔊 Dengarkan</button>
+        <ul class="checklist" style="margin-top:1rem;">
+          <li><span class="ico">🗺️</span> Kenali jalur evakuasi dan titik kumpul terdekat di lingkungan Anda.</li>
+          <li><span class="ico">🎒</span> Siapkan tas siaga bencana: senter, obat pribadi, air minum, uang tunai, dokumen penting, peluit.</li>
+          <li><span class="ico">🏠</span> Periksa kekokohan rumah — cek retakan dinding dan ikat lemari besar ke dinding.</li>
+          <li><span class="ico">👨‍👩‍👧‍👦</span> Sepakati titik temu keluarga jika terpisah saat kejadian.</li>
+          <li><span class="ico">🧑‍🏫</span> Ikuti dan ajak keluarga latihan simulasi gempa secara berkala.</li>
+          <li><span class="ico">📻</span> Simpan nomor darurat dan pantau info resmi dari BPBD/BMKG.</li>
+        </ul>
+      </div>
+
+      <div class="tab-panel" id="tab-saat">
+        <button class="speak-btn" onclick="speakList('tab-saat', this)">🔊 Dengarkan</button>
+        <ul class="checklist" style="margin-top:1rem;">
+          <li><span class="ico">🛑</span> Tetap tenang. Jangan berlari panik atau berteriak.</li>
+          <li><span class="ico">🪑</span> Di dalam rumah: berlindung di bawah meja kokoh, lindungi kepala &amp; leher.</li>
+          <li><span class="ico">🚪</span> Jauhi kaca, lemari, dan benda yang bisa jatuh.</li>
+          <li><span class="ico">🚫</span> Jangan gunakan lift — jika di gedung bertingkat, gunakan tangga darurat.</li>
+          <li><span class="ico">🌳</span> Di luar ruangan: menjauh dari bangunan, tiang listrik, dan pohon besar.</li>
+          <li><span class="ico">🚗</span> Jika di kendaraan: berhenti di tempat terbuka, tetap di dalam mobil.</li>
+        </ul>
+      </div>
+
+      <div class="tab-panel" id="tab-sesudah">
+        <button class="speak-btn" onclick="speakList('tab-sesudah', this)">🔊 Dengarkan</button>
+        <ul class="checklist" style="margin-top:1rem;">
+          <li><span class="ico">🩹</span> Periksa diri sendiri dan keluarga dari kemungkinan luka.</li>
+          <li><span class="ico">🚶</span> Keluar rumah dengan tenang melalui jalur evakuasi menuju titik kumpul.</li>
+          <li><span class="ico">⚠️</span> Waspada gempa susulan, jangan langsung masuk kembali ke bangunan retak.</li>
+          <li><span class="ico">🏗️</span> Tunggu bangunan diperiksa petugas sebelum digunakan lagi.</li>
+          <li><span class="ico">🧓</span> Bantu tetangga, terutama lansia, anak-anak, dan penyandang disabilitas.</li>
+          <li><span class="ico">📵</span> Dengarkan info resmi dari BPBD/BMKG, jangan mudah percaya kabar bohong (hoaks).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENCANA LAIN -->
+<section id="bencana-lain">
+  <div class="wrap">
+    <div class="eyebrow">Bencana Lain di Sekitar Kita</div>
+    <h2 style="font-size:clamp(1.8rem,3.6vw,2.6rem); max-width:26ch;">Selain gempa, kenali juga risiko kebakaran hutan, longsor, banjir &amp; angin kencang.</h2>
+    <p class="lead" style="margin-top:.6rem; max-width:62ch;">Desa Pakuhaji berada di wilayah perbukitan Bandung Barat — selain jalur Sesar Lembang, warga juga perlu waspada terhadap bencana musiman berikut. Pilih tab untuk melihat penjelasan, ilustrasi, dan panduan keselamatannya.</p>
+
+    <div style="margin-top:2rem;">
+      <div class="disaster-tabs-nav">
+        <button class="disaster-tab-btn active" data-color="fire" data-dtab="karhutla" onclick="showDisasterTab('karhutla',this)">🔥 Kebakaran Hutan &amp; Lahan</button>
+        <button class="disaster-tab-btn" data-color="land" data-dtab="longsor" onclick="showDisasterTab('longsor',this)">⛰️ Tanah Longsor</button>
+        <button class="disaster-tab-btn" data-color="flood" data-dtab="banjir" onclick="showDisasterTab('banjir',this)">🌊 Banjir &amp; Banjir Bandang</button>
+        <button class="disaster-tab-btn" data-color="wind" data-dtab="anginkencang" onclick="showDisasterTab('anginkencang',this)">🌪️ Angin Kencang &amp; Puting Beliung</button>
+      </div>
+
+      <!-- KARHUTLA -->
+      <div class="disaster-panel active" id="dtab-karhutla">
+        <div class="disaster-card">
+          <div class="disaster-illust">
+            <svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustrasi animasi kebakaran hutan dan lahan">
+              <rect x="0" y="0" width="320" height="260" rx="14" fill="#FCE7B8"/>
+              <rect x="0" y="190" width="320" height="70" fill="#6B4A28"/>
+              <g class="tree-burn"><rect x="30" y="140" width="10" height="55" fill="#4A3116"/><circle cx="35" cy="130" r="26" fill="#7A4A1E"/></g>
+              <g class="tree-burn" style="animation-delay:.3s"><rect x="255" y="150" width="9" height="45" fill="#4A3116"/><circle cx="259" cy="140" r="22" fill="#8A5A28"/></g>
+              <g class="flame" style="animation-delay:0s">
+                <path d="M110 195 Q100 165 118 145 Q112 168 128 158 Q120 178 140 165 Q132 185 150 195 Z" fill="#E2622C"/>
+                <path d="M120 195 Q116 175 128 162 Q126 178 136 172 Q131 186 145 195 Z" fill="#F0AC3E"/>
+              </g>
+              <g class="flame f2">
+                <path d="M160 195 Q150 160 172 138 Q164 165 182 153 Q172 176 195 162 Q186 184 205 195 Z" fill="#E2622C"/>
+                <path d="M172 195 Q167 172 182 156 Q180 174 192 166 Q186 182 202 195 Z" fill="#F0AC3E"/>
+              </g>
+              <g class="flame f3">
+                <path d="M205 195 Q198 172 213 155 Q208 174 222 165 Q215 182 232 195 Z" fill="#E2622C"/>
+              </g>
+              <circle class="smoke" cx="130" cy="140" r="14" fill="#5B4C3A" opacity="0.5"/>
+              <circle class="smoke s2" cx="175" cy="130" r="17" fill="#5B4C3A" opacity="0.45"/>
+              <circle class="smoke s3" cx="215" cy="145" r="13" fill="#5B4C3A" opacity="0.5"/>
+            </svg>
+          </div>
+          <div class="disaster-text">
+            <h3>Kebakaran Hutan &amp; Lahan (Karhutla)</h3>
+            <p>Musim kemarau panjang membuat lahan dan semak kering mudah terbakar, apalagi jika ada praktik membuka lahan dengan cara dibakar. Api bisa menjalar cepat lewat rumput kering dan terbawa angin, mengancam kebun, hutan, dan permukiman di sekitar perbukitan Pakuhaji.</p>
+            <div class="fact-mini-grid">
+              <div class="fact-mini"><b>Jun–Okt</b><span>Puncak musim rawan karhutla</span></div>
+              <div class="fact-mini"><b>Asap</b><span>Bahaya utama bagi pernapasan</span></div>
+              <div class="fact-mini"><b>Angin</b><span>Mempercepat penjalaran api</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="disaster-checklist-wrap">
+          <h4>🎒 Panduan Singkat Kebakaran Hutan &amp; Lahan</h4>
+          <ul class="mini-checklist">
+            <li><span class="ico">🚫</span><div><b>Sebelum</b>Jangan membuka lahan dengan cara membakar; buat sekat bakar di kebun.</div></li>
+            <li><span class="ico">💧</span><div><b>Sebelum</b>Siapkan sumber air/pasir di dekat rumah saat musim kemarau.</div></li>
+            <li><span class="ico">📞</span><div><b>Saat</b>Segera laporkan titik api ke damkar (113) &amp; warga sekitar.</div></li>
+            <li><span class="ico">🏃</span><div><b>Saat</b>Menjauh berlawanan arah angin, jangan melawan arah api.</div></li>
+            <li><span class="ico">😷</span><div><b>Saat</b>Gunakan masker &amp; kain basah untuk melindungi pernapasan dari asap.</div></li>
+            <li><span class="ico">🌱</span><div><b>Sesudah</b>Bantu pemulihan lahan &amp; laporkan titik api yang masih membara.</div></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- LONGSOR -->
+      <div class="disaster-panel" id="dtab-longsor">
+        <div class="disaster-card">
+          <div class="disaster-illust">
+            <svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustrasi animasi tanah longsor di lereng">
+              <rect x="0" y="0" width="320" height="260" rx="14" fill="#F3E4C0"/>
+              <g class="slide-soil">
+                <polygon points="0,60 190,60 60,260 0,260" fill="#8A5A32"/>
+                <polygon points="0,90 170,90 55,260 0,260" fill="#6B4322"/>
+                <path class="slide-crack" d="M40 65 L70 100 L45 140 L80 175" fill="none" stroke="#FBF3E1" stroke-width="3"/>
+              </g>
+              <polygon points="190,60 320,60 320,260 60,260" fill="#5B8A4A"/>
+              <rect x="0" y="230" width="320" height="30" fill="#9C6A34"/>
+              <g class="slide-rock r1"><rect x="90" y="90" width="20" height="20" rx="4" fill="#5B4023"/></g>
+              <g class="slide-rock r2"><rect x="130" y="110" width="16" height="16" rx="4" fill="#6B4322"/></g>
+              <g class="slide-rock r3"><rect x="70" y="130" width="14" height="14" rx="3" fill="#4A3116"/></g>
+              <g><rect x="230" y="150" width="8" height="45" fill="#4A3116"/><circle cx="234" cy="140" r="24" fill="#3F9A5A"/></g>
+              <g><rect x="270" y="165" width="7" height="38" fill="#4A3116"/><circle cx="273" cy="155" r="20" fill="#2C6E3E"/></g>
+            </svg>
+          </div>
+          <div class="disaster-text">
+            <h3>Tanah Longsor</h3>
+            <p>Lereng dan tebing di wilayah perbukitan Bandung Barat rawan longsor terutama saat musim hujan, bila tanah jenuh air, kemiringan curam, atau vegetasi penahan tanah berkurang. Longsor bisa terjadi tiba-tiba setelah hujan deras berkepanjangan.</p>
+            <div class="fact-mini-grid">
+              <div class="fact-mini"><b>Nov–Mar</b><span>Puncak musim hujan, rawan longsor</span></div>
+              <div class="fact-mini"><b>Retakan tanah</b><span>Tanda awal yang wajib diwaspadai</span></div>
+              <div class="fact-mini"><b>Lereng &gt;30°</b><span>Kemiringan yang lebih berisiko</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="disaster-checklist-wrap">
+          <h4>🎒 Panduan Singkat Tanah Longsor</h4>
+          <ul class="mini-checklist">
+            <li><span class="ico">🌳</span><div><b>Sebelum</b>Jaga vegetasi &amp; jangan menebang pohon penahan tanah di lereng.</div></li>
+            <li><span class="ico">👀</span><div><b>Sebelum</b>Kenali tanda awal: retakan tanah, air keruh tiba-tiba, pohon miring.</div></li>
+            <li><span class="ico">🏃</span><div><b>Saat</b>Segera menjauh tegak lurus dari arah longsoran, jangan panik.</div></li>
+            <li><span class="ico">⛔</span><div><b>Saat</b>Jangan berlindung di bawah tebing atau dekat aliran material longsor.</div></li>
+            <li><span class="ico">📢</span><div><b>Saat</b>Beri tahu tetangga sekitar &amp; hubungi SAR/Basarnas (115) bila ada korban.</div></li>
+            <li><span class="ico">🚧</span><div><b>Sesudah</b>Jauhi area longsor, tunggu petugas menyatakan aman sebelum kembali.</div></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- BANJIR -->
+      <div class="disaster-panel" id="dtab-banjir">
+        <div class="disaster-card">
+          <div class="disaster-illust">
+            <svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustrasi animasi banjir dengan air naik">
+              <rect x="0" y="0" width="320" height="260" rx="14" fill="#DDEFF5"/>
+              <g><rect x="30" y="80" width="60" height="90" fill="#F3E4C0" stroke="#2B2016" stroke-width="3"/><polygon points="24,80 60,54 96,80" fill="#B84A1E" stroke="#2B2016" stroke-width="3"/></g>
+              <g><rect x="220" y="95" width="55" height="75" fill="#F3E4C0" stroke="#2B2016" stroke-width="3"/><polygon points="215,95 247,72 280,95" fill="#8A5A32" stroke="#2B2016" stroke-width="3"/></g>
+              <g class="flood-level">
+                <path class="wave" d="M-20 190 Q 10 178 40 190 T 100 190 T 160 190 T 220 190 T 280 190 T 340 190 V 260 H -20 Z" fill="#2E8FB0" opacity="0.85"/>
+                <path class="wave w2" d="M-20 200 Q 10 190 40 200 T 100 200 T 160 200 T 220 200 T 280 200 T 340 200 V 260 H -20 Z" fill="#1F6B85" opacity="0.7"/>
+              </g>
+              <g class="float-debris"><rect x="120" y="182" width="26" height="8" rx="3" fill="#8A5A32"/></g>
+              <g class="float-debris" style="animation-delay:.6s"><circle cx="195" cy="188" r="7" fill="#3F9A5A"/></g>
+            </svg>
+          </div>
+          <div class="disaster-text">
+            <h3>Banjir &amp; Banjir Bandang</h3>
+            <p>Hujan deras yang berlangsung lama, saluran air tersumbat, atau luapan sungai bisa menyebabkan banjir di area dataran rendah. Di kawasan berbukit, banjir bandang dapat datang tiba-tiba dan membawa material dari hulu — lebih berbahaya karena arusnya deras.</p>
+            <div class="fact-mini-grid">
+              <div class="fact-mini"><b>Cepat naik</b><span>Banjir bandang bisa datang mendadak</span></div>
+              <div class="fact-mini"><b>Saluran air</b><span>Rutin dibersihkan agar tak tersumbat</span></div>
+              <div class="fact-mini"><b>Listrik</b><span>Matikan bila air mulai masuk rumah</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="disaster-checklist-wrap">
+          <h4>🎒 Panduan Singkat Banjir</h4>
+          <ul class="mini-checklist">
+            <li><span class="ico">🧹</span><div><b>Sebelum</b>Bersihkan saluran air &amp; jangan buang sampah ke sungai/selokan.</div></li>
+            <li><span class="ico">📦</span><div><b>Sebelum</b>Simpan dokumen &amp; barang berharga di tempat tinggi.</div></li>
+            <li><span class="ico">🔌</span><div><b>Saat</b>Matikan listrik &amp; gas bila air mulai masuk ke rumah.</div></li>
+            <li><span class="ico">⬆️</span><div><b>Saat</b>Segera pindah ke tempat lebih tinggi, jangan menerjang arus deras.</div></li>
+            <li><span class="ico">🚱</span><div><b>Sesudah</b>Waspada air terkontaminasi, jangan konsumsi air banjir langsung.</div></li>
+            <li><span class="ico">🧼</span><div><b>Sesudah</b>Bersihkan &amp; keringkan rumah sebelum ditempati kembali.</div></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ANGIN KENCANG -->
+      <div class="disaster-panel" id="dtab-anginkencang">
+        <div class="disaster-card">
+          <div class="disaster-illust">
+            <svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustrasi animasi angin kencang dan puting beliung">
+              <rect x="0" y="0" width="320" height="260" rx="14" fill="#F3E9DD"/>
+              <rect x="0" y="205" width="320" height="55" fill="#C9BCA4"/>
+              <g class="wind-tree"><rect x="55" y="150" width="9" height="55" fill="#4A3116"/><ellipse cx="59" cy="140" rx="30" ry="24" fill="#3F9A5A"/></g>
+              <g class="wind-tree" style="animation-delay:.15s"><rect x="245" y="160" width="8" height="45" fill="#4A3116"/><ellipse cx="249" cy="150" rx="26" ry="20" fill="#2C6E3E"/></g>
+              <g class="spiral" style="transform-box:fill-box;">
+                <path d="M160 60 C 190 70, 200 100, 175 115 C 155 127, 140 115, 148 100 C 154 90, 168 92, 168 103" fill="none" stroke="#C24D6E" stroke-width="7" stroke-linecap="round"/>
+              </g>
+              <path d="M160 118 L145 205 L175 205 Z" fill="#C9BCA4" opacity="0.55"/>
+              <g class="wind-leaf"><ellipse cx="90" cy="90" rx="6" ry="4" fill="#F0AC3E"/></g>
+              <g class="wind-leaf" style="animation-delay:.7s"><ellipse cx="70" cy="120" rx="5" ry="3" fill="#3F9A5A"/></g>
+              <g class="wind-leaf" style="animation-delay:1.4s"><ellipse cx="100" cy="70" rx="5" ry="3.5" fill="#B84A1E"/></g>
+            </svg>
+          </div>
+          <div class="disaster-text">
+            <h3>Angin Kencang &amp; Puting Beliung</h3>
+            <p>Perubahan cuaca ekstrem saat pancaroba bisa memicu angin kencang bahkan puting beliung dalam waktu singkat. Angin ini dapat merobohkan pohon, menerbangkan atap seng, dan merusak bangunan yang tidak kokoh — biasanya berlangsung singkat namun merusak.</p>
+            <div class="fact-mini-grid">
+              <div class="fact-mini"><b>Pancaroba</b><span>Masa peralihan musim paling rawan</span></div>
+              <div class="fact-mini"><b>&lt;10 menit</b><span>Puting beliung biasanya berlangsung singkat</span></div>
+              <div class="fact-mini"><b>Atap &amp; pohon</b><span>Objek paling berisiko roboh/terbang</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="disaster-checklist-wrap">
+          <h4>🎒 Panduan Singkat Angin Kencang</h4>
+          <ul class="mini-checklist">
+            <li><span class="ico">🌳</span><div><b>Sebelum</b>Pangkas dahan/pohon rapuh dekat rumah &amp; kuatkan atap seng.</div></li>
+            <li><span class="ico">📱</span><div><b>Sebelum</b>Pantau info cuaca ekstrem dari BMKG secara berkala.</div></li>
+            <li><span class="ico">🏠</span><div><b>Saat</b>Segera masuk ke bangunan kokoh, jauhi jendela kaca besar.</div></li>
+            <li><span class="ico">🚗</span><div><b>Saat</b>Hindari berteduh di bawah pohon besar atau papan reklame.</div></li>
+            <li><span class="ico">⚡</span><div><b>Saat</b>Matikan peralatan listrik bila terjadi petir menyertai angin.</div></li>
+            <li><span class="ico">🔎</span><div><b>Sesudah</b>Periksa kerusakan &amp; laporkan kabel listrik putus ke petugas.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CEK KESIAPAN -->
+<section id="kesiapan">
+  <div class="wrap">
+    <div class="eyebrow">Alat Bantu</div>
+    <h2 style="font-size:clamp(1.8rem,3.6vw,2.6rem); max-width:24ch;">Cek Kesiapan Keluarga Anda</h2>
+    <p class="lead" style="margin-top:.6rem; max-width:60ch;">Centang yang sudah Anda siapkan. Skor Anda otomatis tersimpan di perangkat ini.</p>
+    <div class="readiness-wrap">
+      <ul class="kit-list" id="kit-list"></ul>
+      <div class="score-card">
+        <svg class="score-ring" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#4A3D2C" stroke-width="12"/>
+          <circle id="score-circle" cx="60" cy="60" r="50" fill="none" stroke="#7CFF9E" stroke-width="12"
+            stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314" transform="rotate(-90 60 60)"/>
+          <text x="60" y="66" text-anchor="middle" font-family="'Baloo 2', 'Fraunces', serif" font-weight="800" font-size="26" fill="#fff" id="score-percent">0%</text>
+        </svg>
+        <div class="score-label">Tingkat Kesiapan</div>
+        <div class="score-msg" id="score-msg">Ayo mulai centang persiapan Anda!</div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:1rem; border-color:#fff; color:#fff; box-shadow:0 3px 0 0 #fff;" onclick="resetKit()">↺ Reset Checklist</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SIMULASI -->
+<section id="simulasi">
+  <div class="wrap">
+    <div class="eyebrow">Latihan</div>
+    <h2 style="font-size:clamp(1.8rem,3.6vw,2.6rem); max-width:24ch;">Simulasi &amp; Latihan Evakuasi</h2>
+    <p class="lead" style="margin-top:.6rem; max-width:60ch;">Cocok dipraktikkan bersama keluarga atau di sekolah supaya semua tahu apa yang harus dilakukan.</p>
+    <div class="sim-grid">
+      <div class="sim-card">
+        <h3>🚨 Simulasi Gempa</h3>
+        <p>Tekan mulai untuk mencoba latihan reaksi cepat saat gempa terjadi, lengkap dengan panduan suara.</p>
+        <div class="sim-stage" id="sim-stage">Tekan "Mulai Simulasi" untuk berlatih.</div>
+        <div class="sim-actions">
+          <button class="btn btn-clay" onclick="startSimulasi()">▶️ Mulai Simulasi</button>
+        </div>
+      </div>
+      <div class="sim-card">
+        <h3>⏱️ Latihan Evakuasi</h3>
+        <p>Ukur berapa lama waktu keluarga Anda untuk berlindung lalu sampai ke titik kumpul.</p>
+        <div class="timer-display" id="timer-display">00:00</div>
+        <div class="sim-actions">
+          <button class="btn btn-moss" id="timer-start" onclick="toggleTimer()">▶️ Mulai</button>
+          <button class="btn btn-ghost" onclick="resetTimer()">↺ Reset</button>
+        </div>
+        <div class="best-time" id="best-time">Rekor terbaik: belum ada</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KUIS -->
+<section id="kuis">
+  <div class="wrap">
+    <div class="eyebrow">Uji Pemahaman</div>
+    <h2 style="font-size:clamp(1.8rem,3.6vw,2.6rem); max-width:24ch;">Kuis Kesiapsiagaan Bencana</h2>
+    <p class="lead" style="margin-top:.6rem; max-width:60ch;">5 pertanyaan singkat, seru dimainkan bersama anak-anak.</p>
+    <div class="quiz-card">
+      <div class="quiz-progress"><span id="quiz-progress-text">Soal 1 dari 5</span><span id="quiz-score-text">Skor: 0</span></div>
+      <div id="quiz-body"></div>
+      <div class="quiz-result" id="quiz-result">
+        <div class="big" id="quiz-final">0/5</div>
+        <p id="quiz-feedback">Terus belajar ya!</p>
+        <button class="btn btn-clay" onclick="restartQuiz()">↺ Coba Lagi</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NOMOR DARURAT -->
+<section id="darurat">
+  <div class="wrap">
+    <div class="emergency-section" style="padding:clamp(28px,5vw,56px);">
+      <div class="eyebrow">Kontak Darurat</div>
+      <h2 style="font-size:clamp(1.8rem,3.6vw,2.6rem); max-width:22ch;">Jika terjadi bencana, langsung hubungi:</h2>
+      <p class="lead" style="max-width:60ch;">Ketuk kartu di bawah ini untuk langsung menelepon. Simpan nomor-nomor ini di ponsel keluarga Anda.</p>
+
+      <div class="sos-cta">
+        <div class="txt">
+          <b>🆘 Butuh bantuan sekarang?</b>
+          <span>Hubungi tim penanggulangan bencana, polisi, atau pemadam dalam satu ketukan.</span>
+        </div>
+        <button class="btn btn-sos-big" onclick="openSOS()">🆘 Kirim SOS Sekarang</button>
+      </div>
+
+      <div class="call-grid">
+        <a class="call-card" href="tel:112">
+          <span class="ring"></span>
+          <span class="num">112</span>
+          <span class="role">🚨 Panggilan Darurat Nasional</span>
+          <span class="desc">Layanan darurat terpadu untuk semua jenis kejadian — gratis, 24 jam.</span>
+          <span class="tap">Ketuk untuk menelepon →</span>
+        </a>
+        <a class="call-card" href="tel:113">
+          <span class="ring"></span>
+          <span class="num">113</span>
+          <span class="role">🚒 Pemadam Kebakaran</span>
+          <span class="desc">Damkar — untuk kebakaran dan kejadian yang butuh tim penyelamat api.</span>
+          <span class="tap">Ketuk untuk menelepon →</span>
+        </a>
+        <a class="call-card" href="tel:110">
+          <span class="ring"></span>
+          <span class="num">110</span>
+          <span class="role">👮 Polisi</span>
+          <span class="desc">Untuk keamanan, ketertiban, dan bantuan evakuasi darurat.</span>
+          <span class="tap">Ketuk untuk menelepon →</span>
+        </a>
+        <a class="call-card" href="tel:115">
+          <span class="ring"></span>
+          <span class="num">115</span>
+          <span class="role">🛟 SAR / Basarnas</span>
+          <span class="desc">Tim pencarian dan penyelamatan untuk korban tertimpa atau hilang.</span>
+          <span class="tap">Ketuk untuk menelepon →</span>
+        </a>
+        <a class="call-card" href="tel:119">
+          <span class="ring"></span>
+          <span class="num">119</span>
+          <span class="role">🚑 Ambulans / Layanan Kesehatan</span>
+          <span class="desc">Public Safety Center — bantuan medis darurat 24 jam.</span>
+          <span class="tap">Ketuk untuk menelepon →</span>
+        </a>
+      </div>
+
+      <div class="local-panel">
+        <h3>✏️ Kontak Darurat Lokal Desa Pakuhaji</h3>
+        <p class="hint">Tambahkan nomor BPBD Kabupaten Bandung Barat, Kepala Desa, RT/RW, atau Bidan Desa agar mudah diakses semua warga. Data tersimpan otomatis di perangkat ini.</p>
+        <div class="contact-form">
+          <input type="text" id="c-name" placeholder="Nama / jabatan (mis. Kepala Desa Pakuhaji)">
+          <input type="text" id="c-role" placeholder="Keterangan (mis. Ketua RW 03)">
+          <input type="tel" id="c-phone" placeholder="Nomor telepon">
+          <button class="btn btn-moss" onclick="addContact()">+ Tambah</button>
+        </div>
+        <ul class="contact-list" id="contact-list"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<button class="fab-emergency sos-pulse" onclick="openSOS()" aria-label="Kirim SOS darurat">
+  <span class="ico">🆘</span> SOS
+</button>
+<button class="fab-top" id="fab-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Kembali ke atas">↑</button>
+
+<!-- MODAL SOS -->
+<div class="sos-overlay" id="sos-overlay" onclick="if(event.target===this) closeSOS();">
+  <div class="sos-modal" role="dialog" aria-modal="true" aria-labelledby="sos-title">
+    <div class="sos-modal-head">
+      <h3 id="sos-title">🆘 Kirim SOS Darurat</h3>
+      <button class="sos-close" onclick="closeSOS()" aria-label="Tutup">✕</button>
+    </div>
+    <p class="sub">Hubungi bantuan secepat mungkin. Tetap tenang.</p>
+
+    <div class="sos-block">
+      <h4>📞 Hubungi Langsung</h4>
+      <div class="sos-call-grid">
+        <a class="sos-call-mini" href="tel:112"><span class="n">112</span><span class="l">Darurat Nasional</span></a>
+        <a class="sos-call-mini" href="tel:110"><span class="n">110</span><span class="l">Polisi</span></a>
+        <a class="sos-call-mini" href="tel:113"><span class="n">113</span><span class="l">Pemadam Kebakaran</span></a>
+        <a class="sos-call-mini" href="tel:115"><span class="n">115</span><span class="l">SAR / Basarnas</span></a>
+        <a class="sos-call-mini" href="tel:119"><span class="n">119</span><span class="l">Ambulans</span></a>
+      </div>
+    </div>
+
+    <div class="sos-block" style="margin-bottom:0;">
+      <h4>🏘️ Kontak Lokal Desa Pakuhaji</h4>
+      <p style="font-size:.85rem; color:var(--ink-soft); margin:0 0 .8rem;">Telepon langsung kontak yang sudah disimpan.</p>
+      <div id="sos-local-contacts"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p><b>Siaga Pakuhaji</b> — dibuat untuk edukasi &amp; mitigasi bencana (gempa Sesar Lembang, kebakaran hutan &amp; lahan, tanah longsor, banjir, dan angin kencang) warga Desa Pakuhaji, Kecamatan Ngamprah, Kabupaten Bandung Barat.</p>
+    <p>KKN Kelompok 12 · Universitas Nurtanio · 2026</p>
+  </div>
+</footer>
+
+<script>
+/* ---------- STORAGE HELPER ---------- */
+var memoryStore = {};
+var Store = {
+  get: function(key, fallback){
+    try{ var v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; }
+    catch(e){ return (key in memoryStore) ? memoryStore[key] : fallback; }
+  },
+  set: function(key, value){
+    try{ localStorage.setItem(key, JSON.stringify(value)); }
+    catch(e){ memoryStore[key] = value; }
+  }
+};
+
+/* ---------- FONT SIZE ---------- */
+function setFontSize(size, btn){
+  document.documentElement.classList.remove('text-lg','text-xl');
+  if(size==='lg') document.documentElement.classList.add('text-lg');
+  if(size==='xl') document.documentElement.classList.add('text-xl');
+  document.querySelectorAll('.fs-toggle button').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  Store.set('fontsize', size);
+}
+(function(){
+  var saved = Store.get('fontsize','base');
+  var map = {base:'fs-a', lg:'fs-b', xl:'fs-c'};
+  var btn = document.getElementById(map[saved] || 'fs-a');
+  if(btn) setFontSize(saved, btn);
+})();
+
+/* ---------- HIGH CONTRAST ---------- */
+function toggleContrast(){
+  var on = document.documentElement.classList.toggle('contrast');
+  document.getElementById('contrast-btn').classList.toggle('on', on);
+  Store.set('contrast', on);
+}
+(function(){
+  if(Store.get('contrast', false)){
+    document.documentElement.classList.add('contrast');
+    document.getElementById('contrast-btn').classList.add('on');
+  }
+})();
+
+/* ---------- MOBILE NAV ---------- */
+function toggleMobileNav(forceClose){
+  var nav = document.getElementById('nav-links');
+  var btn = document.getElementById('hamburger-btn');
+  var willOpen = forceClose === true ? false : !nav.classList.contains('open');
+  nav.classList.toggle('open', willOpen);
+  btn.classList.toggle('open', willOpen);
+  btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+}
+document.querySelectorAll('#nav-links a').forEach(function(a){
+  a.addEventListener('click', function(){ toggleMobileNav(true); });
+});
+document.addEventListener('click', function(e){
+  var nav = document.getElementById('nav-links');
+  var btn = document.getElementById('hamburger-btn');
+  if(nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)){
+    toggleMobileNav(true);
+  }
+});
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') toggleMobileNav(true);
+});
+window.addEventListener('resize', function(){
+  if(window.innerWidth > 900) toggleMobileNav(true);
+});
+
+/* ---------- TABS ---------- */
+function showTab(name, btn){
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ---------- BENCANA LAIN TABS ---------- */
+function showDisasterTab(name, btn){
+  document.querySelectorAll('.disaster-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.disaster-tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('dtab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ---------- TEXT TO SPEECH ---------- */
+var currentUtterance = null;
+function speakSection(elId, btn){ speakRaw(document.getElementById(elId).innerText, btn); }
+function speakList(elId, btn){
+  var items = document.getElementById(elId).querySelectorAll('li');
+  var text = Array.prototype.map.call(items, function(li){ return li.innerText; }).join('. ');
+  speakRaw(text, btn);
+}
+function speakRaw(text, btn){
+  if(!('speechSynthesis' in window)){ alert('Maaf, perangkat/browser ini belum mendukung fitur suara.'); return; }
+  if(window.speechSynthesis.speaking){
+    window.speechSynthesis.cancel();
+    document.querySelectorAll('.speak-btn').forEach(function(b){ b.classList.remove('speaking'); });
+    if(currentUtterance && currentUtterance._btn === btn) { currentUtterance = null; return; }
+  }
+  var utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'id-ID'; utter.rate = 0.95; utter._btn = btn;
+  currentUtterance = utter;
+  document.querySelectorAll('.speak-btn').forEach(function(b){ b.classList.remove('speaking'); });
+  btn.classList.add('speaking');
+  var original = btn.textContent;
+  btn.dataset.original = original;
+  btn.textContent = '⏹ Berhenti';
+  utter.onend = function(){ btn.classList.remove('speaking'); btn.textContent = btn.dataset.original; };
+  utter.onerror = function(){ btn.classList.remove('speaking'); btn.textContent = btn.dataset.original; };
+  window.speechSynthesis.speak(utter);
+}
+
+/* ---------- PETA INTERAKTIF (Leaflet) ---------- */
+var PAKUHAJI = [-6.8375, 107.5367];
+var townData = [
+  {name:'Padalarang', coord:[-6.8420, 107.4890], info:'Ujung barat jalur Sesar Lembang, berbatasan dengan wilayah barat Kabupaten Bandung Barat.', color:'#6E6459'},
+  {name:'Desa Pakuhaji — Kec. Ngamprah', coord:PAKUHAJI, info:'Lokasi Desa Pakuhaji. Berada di Kecamatan Ngamprah, salah satu wilayah yang dilintasi segmen aktif Sesar Lembang (Cimeta & Cipogor).', color:'#B84A1E', big:true},
+  {name:'Kec. Cisarua', coord:[-6.7975, 107.5720], info:'Kecamatan tetangga yang juga dilintasi segmen aktif sesar (Cimeta & Cipogor) menurut BMKG.', color:'#6E6459'},
+  {name:'Parongpong', coord:[-6.8150, 107.5930], info:'Wilayah dataran tinggi di bagian tengah jalur Sesar Lembang.', color:'#6E6459'},
+  {name:'Lembang', coord:[-6.8114, 107.6178], info:'Pusat sesar yang memberi nama "Sesar Lembang" — area perbukitan panjang jejak morfologi sesar ini.', color:'#6E6459'},
+  {name:'Cimenyan / Cilengkrang', coord:[-6.8450, 107.6570], info:'Ujung timur jalur sesar sebelum berakhir di wilayah Kabupaten Sumedang.', color:'#6E6459'}
+];
+var faultPath = [
+  [-6.8420, 107.4890], [-6.8375, 107.5367], [-6.7975, 107.5720],
+  [-6.8150, 107.5930], [-6.8114, 107.6178], [-6.8450, 107.6570]
+];
+
+var map, faultLine, townMarkers = [], userMarker = null;
+function initMap(){
+  map = L.map('leaflet-map', {scrollWheelZoom:false}).setView(PAKUHAJI, 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  faultLine = L.polyline(faultPath, {color:'#E2622C', weight:5, dashArray:'2 10', lineCap:'round'}).addTo(map);
+  faultLine.bindPopup('<b>Jalur Sesar Lembang</b><br>Perkiraan arah umum, ± 29 km (ilustratif).');
+
+  townData.forEach(function(t){
+    var marker = L.circleMarker(t.coord, {
+      radius: t.big ? 11 : 7,
+      fillColor: t.color, color:'#fff', weight:2, fillOpacity:1
+    }).addTo(map);
+    marker.bindPopup('<b>'+t.name+'</b><br>'+t.info);
+    if(t.big) marker.bindTooltip('📍 Desa Pakuhaji', {permanent:true, direction:'top', offset:[0,-10], className:'pakuhaji-tip'});
+    townMarkers.push(marker);
+  });
+
+  // open Pakuhaji popup by default
+  townMarkers[1].openPopup();
+}
+window.addEventListener('load', function(){
+  if(typeof L !== 'undefined'){ initMap(); }
+});
+
+function toggleFaultLine(){
+  var on = document.getElementById('toggle-fault').checked;
+  if(!map) return;
+  if(on){ faultLine.addTo(map); } else { map.removeLayer(faultLine); }
+}
+function toggleTowns(){
+  var on = document.getElementById('toggle-towns').checked;
+  if(!map) return;
+  townMarkers.forEach(function(m){ if(on){ m.addTo(map); } else { map.removeLayer(m); } });
+}
+function resetMapView(){
+  if(!map) return;
+  map.setView(PAKUHAJI, 12);
+}
+function haversine(a,b){
+  var R = 6371;
+  var dLat = (b[0]-a[0]) * Math.PI/180;
+  var dLon = (b[1]-a[1]) * Math.PI/180;
+  var lat1 = a[0] * Math.PI/180, lat2 = b[0] * Math.PI/180;
+  var h = Math.sin(dLat/2)**2 + Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+function locateMe(){
+  var resultBox = document.getElementById('geo-result');
+  if(!('geolocation' in navigator)){
+    resultBox.textContent = 'Perangkat ini tidak mendukung fitur lokasi.';
+    resultBox.classList.add('show');
+    return;
+  }
+  resultBox.textContent = '📡 Mencari lokasi Anda...';
+  resultBox.classList.add('show');
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var here = [pos.coords.latitude, pos.coords.longitude];
+    if(userMarker) map.removeLayer(userMarker);
+    userMarker = L.circleMarker(here, {radius:9, fillColor:'#2E8FB0', color:'#fff', weight:2, fillOpacity:1}).addTo(map);
+    userMarker.bindPopup('<b>📍 Lokasi Anda</b>').openPopup();
+    var dist = haversine(here, PAKUHAJI);
+    map.setView(here, 13);
+    resultBox.textContent = '📍 Lokasi Anda kira-kira ' + dist.toFixed(1) + ' km dari Desa Pakuhaji.';
+  }, function(err){
+    resultBox.textContent = '⚠️ Tidak bisa mengambil lokasi (izin ditolak atau tidak tersedia). Anda tetap bisa menjelajahi peta secara manual.';
+  }, {timeout:8000});
+}
+
+/* ---------- TITIK KUMPUL ---------- */
+var defaultTitik = [
+  'Contoh: Lapangan Balai Desa Pakuhaji (silakan ganti dengan lokasi sebenarnya)',
+  'Contoh: Halaman Sekolah / Masjid terdekat (silakan ganti dengan lokasi sebenarnya)'
+];
+function renderTitik(){
+  var list = Store.get('titik-kumpul', defaultTitik);
+  var ul = document.getElementById('titik-list');
+  ul.innerHTML = '';
+  if(list.length === 0){
+    ul.innerHTML = '<li class="empty-hint" style="border:none; background:none;">Belum ada titik kumpul ditambahkan.</li>';
+    return;
+  }
+  list.forEach(function(item, i){
+    var li = document.createElement('li');
+    li.innerHTML = '<span>📍 '+escapeHtml(item)+'</span><button onclick="removeTitik('+i+')" aria-label="Hapus">✕</button>';
+    ul.appendChild(li);
+  });
+}
+function addTitik(){
+  var input = document.getElementById('titik-input');
+  var val = input.value.trim();
+  if(!val) return;
+  var list = Store.get('titik-kumpul', defaultTitik);
+  list.push(val);
+  Store.set('titik-kumpul', list);
+  input.value = '';
+  renderTitik();
+}
+function removeTitik(i){
+  var list = Store.get('titik-kumpul', defaultTitik);
+  list.splice(i,1);
+  Store.set('titik-kumpul', list);
+  renderTitik();
+}
+renderTitik();
+
+/* ---------- CEK KESIAPAN ---------- */
+var kitItems = [
+  {id:'k1', label:'Tas siaga bencana sudah disiapkan (senter, obat, air, dokumen)'},
+  {id:'k2', label:'Sudah tahu jalur evakuasi & titik kumpul terdekat'},
+  {id:'k3', label:'Lemari & barang berat sudah diikat/diamankan ke dinding'},
+  {id:'k4', label:'Sudah menyepakati titik temu keluarga'},
+  {id:'k5', label:'Nomor darurat sudah disimpan di ponsel'},
+  {id:'k6', label:'Rumah sudah dicek dari retakan dinding/atap'},
+  {id:'k7', label:'Sudah pernah latihan simulasi gempa bersama keluarga'},
+  {id:'k8', label:'Tahu cara berlindung: bawah meja, lindungi kepala'}
+];
+function renderKit(){
+  var checked = Store.get('kit-checked', {});
+  var ul = document.getElementById('kit-list');
+  ul.innerHTML = '';
+  kitItems.forEach(function(item){
+    var isChecked = !!checked[item.id];
+    var li = document.createElement('li');
+    li.className = 'kit-item' + (isChecked ? ' checked' : '');
+    li.innerHTML = '<input type="checkbox" '+(isChecked?'checked':'')+' onclick="toggleKit(\''+item.id+'\')"><span class="txt">'+item.label+'</span>';
+    li.addEventListener('click', function(e){
+      if(e.target.tagName.toLowerCase() !== 'input'){ toggleKit(item.id); }
+    });
+    ul.appendChild(li);
+  });
+  updateScore();
+}
+function toggleKit(id){
+  var checked = Store.get('kit-checked', {});
+  checked[id] = !checked[id];
+  Store.set('kit-checked', checked);
+  renderKit();
+}
+function resetKit(){ Store.set('kit-checked', {}); renderKit(); }
+function updateScore(){
+  var checked = Store.get('kit-checked', {});
+  var total = kitItems.length;
+  var done = kitItems.filter(function(i){ return checked[i.id]; }).length;
+  var pct = Math.round((done/total)*100);
+  var circle = document.getElementById('score-circle');
+  var circumference = 314;
+  circle.setAttribute('stroke-dashoffset', circumference - (circumference*pct/100));
+  document.getElementById('score-percent').textContent = pct + '%';
+  var msg = document.getElementById('score-msg');
+  if(pct === 0) msg.textContent = 'Ayo mulai centang persiapan Anda!';
+  else if(pct < 40) msg.textContent = 'Masih perlu banyak persiapan. Yuk lanjutkan!';
+  else if(pct < 80) msg.textContent = 'Cukup siap, sedikit lagi lengkap!';
+  else if(pct < 100) msg.textContent = 'Sangat siap! Tinggal sedikit lagi.';
+  else msg.textContent = '🎉 Keluarga Anda sudah SANGAT SIAP menghadapi gempa!';
+}
+renderKit();
+
+/* ---------- SIMULASI GEMPA ---------- */
+function playBeep(){
+  try{
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator(); var gain = ctx.createGain();
+    osc.type = 'square'; osc.frequency.value = 880; gain.gain.value = 0.06;
+    osc.connect(gain); gain.connect(ctx.destination); osc.start();
+    setTimeout(function(){ osc.stop(); ctx.close(); }, 350);
+  }catch(e){}
+}
+function startSimulasi(){
+  var stage = document.getElementById('sim-stage');
+  var steps = [
+    {text:'🚨 GEMPA TERDETEKSI! Tetap tenang.', delay:0, beep:true},
+    {text:'🪑 Segera berlindung di bawah meja kokoh, lindungi kepala!', delay:2200},
+    {text:'⏳ Bertahan... jauhi jendela dan lemari...', delay:5000},
+    {text:'✅ Getaran mereda. Periksa sekeliling sebelum bergerak.', delay:8000},
+    {text:'🚶 Menuju titik kumpul dengan tenang lewat jalur evakuasi.', delay:10500},
+    {text:'🎉 Simulasi selesai! Bagus, keluarga Anda sudah berlatih.', delay:13000}
+  ];
+  steps.forEach(function(s){
+    setTimeout(function(){
+      stage.textContent = s.text;
+      if(s.beep) playBeep();
+      if(s.delay === 0){ document.body.classList.add('shaking'); }
+      if(s.delay === 8000){ document.body.classList.remove('shaking'); }
+    }, s.delay);
+  });
+}
+
+/* ---------- LATIHAN EVAKUASI ---------- */
+var timerInterval = null, timerSeconds = 0, timerRunning = false;
+function toggleTimer(){
+  var btn = document.getElementById('timer-start');
+  if(!timerRunning){
+    timerRunning = true; btn.textContent = '⏸️ Selesai';
+    timerInterval = setInterval(function(){ timerSeconds++; updateTimerDisplay(); }, 1000);
+  } else {
+    timerRunning = false; clearInterval(timerInterval); btn.textContent = '▶️ Mulai';
+    checkBestTime();
+  }
+}
+function resetTimer(){
+  clearInterval(timerInterval); timerRunning = false; timerSeconds = 0;
+  document.getElementById('timer-start').textContent = '▶️ Mulai';
+  updateTimerDisplay();
+}
+function updateTimerDisplay(){
+  var m = Math.floor(timerSeconds/60).toString().padStart(2,'0');
+  var s = (timerSeconds%60).toString().padStart(2,'0');
+  document.getElementById('timer-display').textContent = m+':'+s;
+}
+function checkBestTime(){
+  if(timerSeconds === 0) return;
+  var best = Store.get('best-evac-time', null);
+  if(best === null || timerSeconds < best){ Store.set('best-evac-time', timerSeconds); showBestTime(); }
+}
+function showBestTime(){
+  var best = Store.get('best-evac-time', null);
+  var el = document.getElementById('best-time');
+  if(best === null){ el.textContent = 'Rekor terbaik: belum ada'; }
+  else{
+    var m = Math.floor(best/60).toString().padStart(2,'0');
+    var s = (best%60).toString().padStart(2,'0');
+    el.textContent = '🏆 Rekor terbaik: '+m+':'+s;
+  }
+}
+showBestTime();
+
+/* ---------- KUIS ---------- */
+var quizQuestions = [
+  {q:'Apa yang sebaiknya Anda lakukan saat merasakan gempa di dalam rumah?', opts:['Lari keluar sambil berteriak','Berlindung di bawah meja kokoh & lindungi kepala','Naik ke lantai atas','Diam berdiri di tengah ruangan'], correct:1, explain:'Berlindung di bawah meja kokoh melindungi Anda dari benda jatuh — ini langkah paling aman saat gempa terjadi.'},
+  {q:'Berapa nomor telepon darurat nasional yang bisa dihubungi untuk semua jenis kejadian?', opts:['100','112','108','911'], correct:1, explain:'112 adalah nomor panggilan darurat terpadu nasional Indonesia, gratis dan aktif 24 jam.'},
+  {q:'Kecamatan mana tempat Desa Pakuhaji berada, yang juga dilewati segmen aktif Sesar Lembang?', opts:['Ngamprah','Cileunyi','Baleendah','Soreang'], correct:0, explain:'Desa Pakuhaji berada di Kecamatan Ngamprah, yang bersama Kecamatan Cisarua dilintasi segmen aktif Cimeta & Cipogor.'},
+  {q:'Apa yang harus dilakukan setelah gempa berhenti?', opts:['Langsung masuk kembali ke rumah retak','Waspada gempa susulan & periksa sekeliling dulu','Menyalakan kompor untuk memasak','Mengabaikan info dari BPBD'], correct:1, explain:'Gempa susulan sering terjadi. Periksa keadaan dulu dan tunggu bangunan diperiksa petugas sebelum masuk kembali.'},
+  {q:'Siapa yang perlu dibantu lebih dulu saat evakuasi bencana?', opts:['Hanya orang dewasa','Lansia, anak-anak, dan penyandang disabilitas','Tidak perlu membantu siapa pun','Hanya keluarga sendiri'], correct:1, explain:'Lansia, anak-anak, dan penyandang disabilitas membutuhkan bantuan ekstra agar bisa evakuasi dengan aman.'}
+];
+var quizIndex = 0, quizScore = 0, quizAnswered = false;
+function renderQuiz(){
+  var q = quizQuestions[quizIndex];
+  document.getElementById('quiz-progress-text').textContent = 'Soal '+(quizIndex+1)+' dari '+quizQuestions.length;
+  document.getElementById('quiz-score-text').textContent = 'Skor: '+quizScore;
+  var body = document.getElementById('quiz-body');
+  quizAnswered = false;
+  var html = '<div class="quiz-q">'+q.q+'</div><div class="quiz-opts">';
+  q.opts.forEach(function(opt, i){ html += '<div class="quiz-opt" onclick="answerQuiz('+i+')" id="opt-'+i+'">'+opt+'</div>'; });
+  html += '</div><div class="quiz-explain" id="quiz-explain">'+q.explain+'</div>';
+  body.innerHTML = html;
+  document.getElementById('quiz-result').classList.remove('show');
+  body.style.display = 'block';
+}
+function answerQuiz(i){
+  if(quizAnswered) return;
+  quizAnswered = true;
+  var q = quizQuestions[quizIndex];
+  document.querySelectorAll('.quiz-opt').forEach(function(el, idx){
+    if(idx === q.correct) el.classList.add('correct');
+    else if(idx === i) el.classList.add('wrong');
+  });
+  if(i === q.correct) quizScore++;
+  document.getElementById('quiz-score-text').textContent = 'Skor: '+quizScore;
+  document.getElementById('quiz-explain').classList.add('show');
+  setTimeout(function(){
+    if(quizIndex < quizQuestions.length - 1){ quizIndex++; renderQuiz(); }
+    else{ finishQuiz(); }
+  }, 1800);
+}
+function finishQuiz(){
+  document.getElementById('quiz-body').style.display = 'none';
+  var result = document.getElementById('quiz-result');
+  result.classList.add('show');
+  document.getElementById('quiz-final').textContent = quizScore+'/'+quizQuestions.length;
+  var fb = document.getElementById('quiz-feedback');
+  if(quizScore === quizQuestions.length) fb.textContent = '🎉 Sempurna! Anda sudah paham betul kesiapsiagaan bencana.';
+  else if(quizScore >= 3) fb.textContent = '👍 Bagus! Sedikit lagi sempurna, coba baca ulang panduan di atas.';
+  else fb.textContent = '📖 Yuk baca ulang bagian Edukasi & Panduan supaya lebih siap!';
+  var best = Store.get('quiz-best', 0);
+  if(quizScore > best) Store.set('quiz-best', quizScore);
+}
+function restartQuiz(){ quizIndex = 0; quizScore = 0; renderQuiz(); }
+renderQuiz();
+
+/* ---------- KONTAK DARURAT LOKAL ---------- */
+function renderContacts(){
+  var list = Store.get('local-contacts', []);
+  var ul = document.getElementById('contact-list');
+  ul.innerHTML = '';
+  if(list.length === 0){
+    ul.innerHTML = '<li class="empty-hint">Belum ada kontak lokal ditambahkan. Isi form di atas untuk menambahkan.</li>';
+    return;
+  }
+  list.forEach(function(c, i){
+    var li = document.createElement('li');
+    li.className = 'contact-item';
+    li.innerHTML = '<div class="info"><b>'+escapeHtml(c.name)+'</b><span>'+escapeHtml(c.role)+'</span></div>' +
+      '<div style="display:flex; gap:.5rem; align-items:center;">' +
+      (c.phone ? '<a class="call-mini" href="tel:'+escapeHtml(c.phone)+'">📞 '+escapeHtml(c.phone)+'</a>' : '') +
+      '<button class="del" onclick="removeContact('+i+')" aria-label="Hapus">✕</button></div>';
+    ul.appendChild(li);
+  });
+}
+function addContact(){
+  var name = document.getElementById('c-name').value.trim();
+  var role = document.getElementById('c-role').value.trim();
+  var phone = document.getElementById('c-phone').value.trim();
+  if(!name || !phone){ alert('Mohon isi nama dan nomor telepon.'); return; }
+  var list = Store.get('local-contacts', []);
+  list.push({name:name, role:role, phone:phone});
+  Store.set('local-contacts', list);
+  document.getElementById('c-name').value = '';
+  document.getElementById('c-role').value = '';
+  document.getElementById('c-phone').value = '';
+  renderContacts();
+}
+function removeContact(i){
+  var list = Store.get('local-contacts', []);
+  list.splice(i,1);
+  Store.set('local-contacts', list);
+  renderContacts();
+}
+renderContacts();
+
+/* ---------- SOS ---------- */
+function openSOS(){
+  document.getElementById('sos-overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  renderSOSContacts();
+}
+function closeSOS(){
+  document.getElementById('sos-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeSOS();
+});
+function renderSOSContacts(){
+  var list = Store.get('local-contacts', []);
+  var wrap = document.getElementById('sos-local-contacts');
+  if(list.length === 0){
+    wrap.innerHTML = '<p class="empty-hint" style="margin:0;">Belum ada kontak lokal (mis. BPBD Kab. Bandung Barat, Kepala Desa, RT/RW). Tambahkan di bagian "Kontak Darurat Lokal Desa Pakuhaji" di bawah.</p>';
+    return;
+  }
+  wrap.innerHTML = '';
+  list.forEach(function(c){
+    var row = document.createElement('div');
+    row.className = 'sos-contact-row';
+    row.innerHTML = '<div class="info"><b>' + escapeHtml(c.name) + '</b><span>' + escapeHtml(c.role) + '</span></div>' +
+      '<a class="btn btn-moss btn-sm" href="tel:' + escapeHtml(c.phone) + '">📞 Telepon</a>';
+    wrap.appendChild(row);
+  });
+}
+
+/* ---------- UTIL ---------- */
+function escapeHtml(str){
+  var div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ---------- NAV ACTIVE + SCROLL TOP ---------- */
+var navSections = ['edukasi','peta','panduan','bencana-lain','kesiapan','simulasi','kuis','darurat'];
+var navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', function(){
+  var scrollPos = window.scrollY + 120;
+  var current = '';
+  navSections.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el && el.offsetTop <= scrollPos){ current = id; }
+  });
+  navLinks.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === '#'+current); });
+  document.getElementById('fab-top').classList.toggle('show', window.scrollY > 500);
+});
+</script>
+
+</body>
+</html>
