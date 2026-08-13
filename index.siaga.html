@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Siaga Pakuhaji — Desa Pakuhaji</title>
+<title>Siaga Sesar Lembang — Desa Pakuhaji</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Baloo+2:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -167,11 +167,11 @@
 
   /* ===== VISUALISASI 3D ===== */
   .v3d-wrap{ position:relative; background:#0f172a; border-radius:26px; padding:0; border:3px solid var(--ink); box-shadow:var(--shadow); overflow:hidden; }
-  .v3d-stage{ position:relative; width:100%; height:500px; background:radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
+  .v3d-stage{ position:relative; width:100%; height:520px; background:radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
   #v3d-canvas-wrap{ width:100%; height:100%; cursor:grab; }
   #v3d-canvas-wrap:active{ cursor:grabbing; }
   .v3d-hint{ position:absolute; bottom:14px; left:14px; color:#cbd5e1; font-size:.78rem; background:rgba(15,23,42,.75); padding:.45rem .95rem; border-radius:20px; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,.12); pointer-events:none; z-index:5; font-weight:700; }
-  .v3d-tools{ position:absolute; top:14px; right:14px; z-index:10; display:flex; gap:.5rem; flex-wrap:wrap; justify-content:flex-end; max-width:64%; }
+  .v3d-tools{ position:absolute; top:14px; right:14px; z-index:10; display:flex; gap:.5rem; flex-wrap:wrap; justify-content:flex-end; max-width:70%; }
   .v3d-legend{ position:absolute; top:14px; left:14px; background:rgba(15,23,42,.82); padding:.75rem .95rem; border-radius:14px; border:1px solid #334155; font-size:.78rem; backdrop-filter:blur(4px); z-index:5; color:#e2e8f0; }
   .v3d-legend-item{ display:flex; align-items:center; gap:.5rem; margin-bottom:.32rem; font-weight:700; }
   .v3d-legend-item:last-child{margin-bottom:0;}
@@ -179,19 +179,16 @@
   .v3d-fallback{ position:absolute; inset:0; display:none; align-items:center; justify-content:center; flex-direction:column; gap:.8rem; text-align:center; padding:2rem; color:#cbd5e1; background:#0f172a; z-index:20; }
   .v3d-fallback.show{ display:flex; }
   .v3d-fallback b{ color:#fff; font-family:var(--font-fun); font-size:1.15rem; }
-  .v3d-info-box{ position:absolute; bottom:14px; right:14px; max-width:270px; background:rgba(15,23,42,.94); border:1px solid #334155; border-radius:14px; padding:.9rem 1.05rem; font-size:.82rem; color:#e2e8f0; z-index:6; display:none; }
-  .v3d-info-box.show{ display:block; animation:fadeUp .3s ease; }
-  .v3d-info-box b{ display:block; color:#fbbf24; margin-bottom:.25rem; font-family:var(--font-fun); font-size:.98rem; }
-  .v3d-info-box .close-info{ position:absolute; top:6px; right:8px; background:none; border:none; color:#94a3b8; cursor:pointer; font-size:.95rem; }
-  .v3d-mag-panel{ display:flex; align-items:center; gap:.9rem; flex-wrap:wrap; background:var(--bg-paper-dim); border:2px solid var(--ink); border-radius:16px; padding:1rem 1.2rem; margin-top:1.2rem; }
-  .v3d-mag-panel label{ font-weight:800; font-size:.92rem; white-space:nowrap; }
-  .v3d-mag-panel input[type="range"]{ flex:1; min-width:160px; accent-color:var(--violet); cursor:pointer; }
-  .v3d-mag-value{ font-family:var(--font-fun); font-weight:800; font-size:1.15rem; color:var(--violet-deep); min-width:88px; text-align:right; }
+  .v3d-mag-select{ background:rgba(15,23,42,.85); color:#f1f5f9; border:1px solid #475569; padding:.62rem .85rem; border-radius:999px; font-size:.82rem; font-weight:700; outline:none; cursor:pointer; backdrop-filter:blur(4px); font-family:'Plus Jakarta Sans', sans-serif; }
+  .v3d-hud{ position:absolute; bottom:14px; right:14px; min-width:180px; max-width:230px; background:rgba(15,23,42,.94); border:1px solid #334155; border-radius:14px; padding:.9rem 1.05rem; font-size:.8rem; color:#e2e8f0; z-index:6; backdrop-filter:blur(4px); }
+  .v3d-hud .hud-title{ font-weight:800; color:#38bdf8; border-bottom:1px solid #334155; padding-bottom:.35rem; margin-bottom:.5rem; text-transform:uppercase; font-size:.68rem; letter-spacing:.05em; font-family:var(--font-fun); }
+  .v3d-hud .hud-row{ display:flex; justify-content:space-between; gap:.6rem; margin-bottom:.28rem; }
+  .v3d-hud .hud-row:last-child{ margin-bottom:0; }
   @media (max-width:900px){
     .v3d-stage{ height:340px; }
     .v3d-tools{ max-width:100%; top:10px; right:10px; }
     .v3d-legend{ font-size:.72rem; padding:.6rem .75rem; }
-    .v3d-info-box{ max-width:210px; font-size:.76rem; bottom:10px; right:10px; }
+    .v3d-hud{ max-width:180px; font-size:.72rem; bottom:10px; right:10px; padding:.7rem .85rem; }
   }
 
   /* ===== TABS ===== */
@@ -435,7 +432,7 @@
 <body>
 <div class="topbar">
   <div class="topbar-inner">
-    <div class="brand"><span class="brand-mark">⛰️</span> Siaga Pakuhaji</div>
+    <div class="brand"><span class="brand-mark">⛰️</span> Siaga Sesar Lembang</div>
     <nav class="nav-links" id="nav-links">
       <a href="#edukasi">Edukasi</a>
       <a href="#peta">Peta</a>
@@ -465,7 +462,7 @@
   <div class="wrap hero-grid">
     <div>
       <div class="eyebrow">Desa Pakuhaji · Kec. Ngamprah · Kab. Bandung Barat</div>
-      <h1>Siaga Pakuhaji — kenali <em>Sesar Lembang</em> &amp; bencana lain, siap sejak dari rumah.</h1>
+      <h1>Siaga Sesar Lembang — kenali <em>jalur sesar</em> &amp; bencana lain, siap sejak dari rumah.</h1>
       <p class="lead" id="hero-text">Website ini dibuat untuk warga Desa Pakuhaji dari anak-anak sampai lansia — supaya semua paham apa itu Sesar Lembang, potensi kebakaran hutan dan lahan, tanah longsor, banjir, serta bencana lain di sekitar kita, ke mana harus mengungsi, dan siapa yang harus dihubungi saat bencana terjadi. Semua fitur di website ini bisa dipakai langsung: peta interaktif, visualisasi 3D gelombang gempa, cek kesiapan keluarga, latihan simulasi, kuis, sampai tombol telepon darurat.</p>
       <button class="speak-btn" onclick="speakSection('hero-text', this)">🔊 Dengarkan</button>
       <div class="hero-ctas">
@@ -580,29 +577,37 @@
 <section id="visual3d">
   <div class="wrap">
     <div class="eyebrow">Visualisasi Interaktif</div>
-    <h2 style="font-size:clamp(1.8rem,3.6vw,2.6rem); max-width:26ch;">Visualisasi 3D Energi Getaran dari Episentrum</h2>
-    <p class="lead" style="margin-top:.6rem; max-width:62ch;" id="v3d-text">Model 3D interaktif ini menggambarkan bagaimana energi gempa bumi, seperti pada jalur Sesar Lembang, merambat sebagai gelombang yang meluas dari titik hiposentrum dan episentrum. Putar, geser, dan perbesar dengan mouse atau jari untuk menjelajah. Ketuk titik merah untuk melihat penjelasan singkat, dan geser penggeser magnitudo untuk melihat bagaimana kekuatan gempa memengaruhi kecepatan &amp; jangkauan gelombang.</p>
+    <h2 style="font-size:clamp(1.8rem,3.6vw,2.6rem); max-width:28ch;">Simulasi 3D Pergerakan &amp; Gelombang Gempa Sesar Lembang</h2>
+    <p class="lead" style="margin-top:.6rem; max-width:64ch;" id="v3d-text">Model 3D interaktif ini menggambarkan topografi Cekungan Bandung, jalur patahan aktif Sesar Lembang, pemukiman warga, dan rambatan gelombang seismik saat terjadi pergeseran batuan. Putar, geser, dan perbesar dengan mouse atau jari untuk menjelajah. Pilih skala magnitudo lalu tekan "Picu Gempa" untuk melihat bagaimana kekuatan gempa memengaruhi guncangan, pergeseran patahan, dan getaran pada rumah warga.</p>
     <button class="speak-btn" onclick="speakSection('v3d-text', this)">🔊 Dengarkan Penjelasan</button>
 
     <div class="v3d-wrap" style="margin-top:1.4rem;">
       <div class="v3d-stage">
         <div class="v3d-tools">
-          <button class="btn btn-ghost btn-sm" id="v3d-autorotate-btn" onclick="toggleAutoRotate3D()">⏸️ Jeda Putar</button>
-          <button class="btn btn-ghost btn-sm" id="v3d-fault-btn" onclick="toggleFaultLine3D()">〰️ Sembunyikan Sesar</button>
+          <select id="magnitude-select" class="v3d-mag-select">
+            <option value="5.0">Skala M 5.0 (Sedang)</option>
+            <option value="6.0" selected>Skala M 6.0 (Kuat)</option>
+            <option value="6.8">Skala M 6.8 (Maksimum Sesar)</option>
+          </select>
+          <button class="btn btn-clay btn-sm" onclick="triggerGempaLembang()">⚡ Picu Gempa</button>
           <button class="btn btn-sky btn-sm" onclick="resetVisual3D()">↺ Reset Tampilan</button>
+          <button class="btn btn-ghost btn-sm" id="v3d-autorotate-btn" onclick="toggleAutoRotate3D()">⏸️ Jeda Putar</button>
         </div>
         <div class="v3d-legend">
-          <div class="v3d-legend-item"><span class="v3d-legend-dot" style="background:#ef4444;"></span> Episentrum / Hiposentrum</div>
-          <div class="v3d-legend-item"><span class="v3d-legend-dot" style="background:#f97316;"></span> Gelombang Seismik (P &amp; S)</div>
-          <div class="v3d-legend-item"><span class="v3d-legend-dot" style="background:#facc15;"></span> Garis Sesar Lembang</div>
+          <div class="v3d-legend-item"><span class="v3d-legend-dot" style="background:#facc15;"></span> Jalur Patahan Aktif Sesar Lembang</div>
+          <div class="v3d-legend-item"><span class="v3d-legend-dot" style="background:#38bdf8;"></span> Topografi Gn. Tangkuban Parahu</div>
+          <div class="v3d-legend-item"><span class="v3d-legend-dot" style="background:#ef4444;"></span> Gelombang Primer (P) &amp; Sekunder (S)</div>
+          <div class="v3d-legend-item"><span class="v3d-legend-dot" style="background:#10b981;"></span> Area Pemukiman / Zona Risiko</div>
+        </div>
+        <div class="v3d-hud">
+          <div class="hud-title">Data Seismik Lembang</div>
+          <div class="hud-row"><span>Status:</span> <b id="hud-status" style="color:#10b981;">NORMAL</b></div>
+          <div class="hud-row"><span>Magnitudo:</span> <b id="hud-mag">M 6.0</b></div>
+          <div class="hud-row"><span>Kedalaman:</span> <b>10 Km</b></div>
+          <div class="hud-row"><span>Tipe Patahan:</span> <b>Mendatar</b></div>
         </div>
         <div id="v3d-canvas-wrap">
-          <span class="v3d-hint">🖱️ Seret untuk memutar · Scroll untuk zoom · Ketuk titik merah untuk info</span>
-        </div>
-        <div class="v3d-info-box" id="v3d-info-box">
-          <button class="close-info" onclick="closeV3DInfo()" aria-label="Tutup">✕</button>
-          <b id="v3d-info-title">Episentrum</b>
-          <span id="v3d-info-text">Titik di permukaan bumi yang tepat berada di atas sumber gempa.</span>
+          <span class="v3d-hint">🖱️ Seret untuk memutar · Scroll untuk zoom</span>
         </div>
         <div class="v3d-fallback" id="v3d-fallback">
           <b>⚠️ Visualisasi 3D tidak dapat dimuat</b>
@@ -611,15 +616,9 @@
       </div>
     </div>
 
-    <div class="v3d-mag-panel">
-      <label for="v3d-mag-slider">🎚️ Skala magnitudo (ilustratif)</label>
-      <input type="range" id="v3d-mag-slider" min="4" max="8" step="0.1" value="6.5" oninput="updateMagnitude3D(this.value)">
-      <span class="v3d-mag-value" id="v3d-mag-value">M 6,5</span>
-    </div>
-
     <div class="map-note" style="margin-top:1.2rem;">
       <span class="ico">ℹ️</span>
-      <p style="margin:0;"><b>Ilustrasi konseptual</b> — visualisasi ini adalah model artistik untuk membantu warga, termasuk anak-anak dan lansia, memahami cara perambatan gelombang gempa secara umum. Ini bukan simulasi ilmiah presisi tinggi dan tidak dapat memprediksi gempa sungguhan.</p>
+      <p style="margin:0;"><b>Ilustrasi konseptual</b> — visualisasi ini adalah model artistik untuk membantu warga, termasuk anak-anak dan lansia, memahami topografi Cekungan Bandung dan cara perambatan gelombang gempa secara umum. Ini bukan simulasi ilmiah presisi tinggi dan tidak dapat memprediksi gempa sungguhan.</p>
     </div>
   </div>
 </section>
@@ -1040,7 +1039,7 @@
 
 <footer>
   <div class="wrap">
-    <p><b>Siaga Pakuhaji</b> — dibuat untuk edukasi &amp; mitigasi bencana (gempa Sesar Lembang lengkap dengan visualisasi 3D, kebakaran hutan &amp; lahan, tanah longsor, banjir, dan angin kencang) warga Desa Pakuhaji, Kecamatan Ngamprah, Kabupaten Bandung Barat.</p>
+    <p><b>Siaga Sesar Lembang</b> — dibuat untuk edukasi &amp; mitigasi bencana (gempa Sesar Lembang lengkap dengan visualisasi 3D, kebakaran hutan &amp; lahan, tanah longsor, banjir, dan angin kencang) warga Desa Pakuhaji, Kecamatan Ngamprah, Kabupaten Bandung Barat.</p>
     <p>KKN Kelompok 12 · Universitas Nurtanio · 2026</p>
   </div>
 </footer>
@@ -1538,11 +1537,11 @@ function escapeHtml(str){
 /* ================================================================ */
 var v3d = {
   scene:null, camera:null, renderer:null, controls:null,
-  waveSpheres:[], autoRotate:true, faultVisible:true,
-  hypocenter:null, epicenter:null, faultLine3d:null,
-  raycaster:null, mouse:null, magnitude:6.5, initialized:false
+  waveSpheres:[], faultBlockLeft:null, faultBlockRight:null, faultLine3d:null,
+  buildingsGroup:null, autoRotate:true, isQuaking:false,
+  quakeIntensity:0, initialized:false
 };
-var v3dInitialCameraPos = { x: 35, y: 25, z: 35 };
+var v3dInitialCameraPos = { x: 32, y: 24, z: 34 };
 
 function initV3D(){
   var container = document.getElementById('v3d-canvas-wrap');
@@ -1557,7 +1556,7 @@ function initV3D(){
 
     v3d.scene = new THREE.Scene();
     v3d.scene.background = new THREE.Color(0x0f172a);
-    v3d.scene.fog = new THREE.FogExp2(0x0f172a, 0.015);
+    v3d.scene.fog = new THREE.FogExp2(0x0f172a, 0.012);
 
     v3d.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
     v3d.camera.position.set(v3dInitialCameraPos.x, v3dInitialCameraPos.y, v3dInitialCameraPos.z);
@@ -1571,78 +1570,102 @@ function initV3D(){
     v3d.controls = new THREE.OrbitControls(v3d.camera, v3d.renderer.domElement);
     v3d.controls.enableDamping = true;
     v3d.controls.dampingFactor = 0.05;
-    v3d.controls.maxPolarAngle = Math.PI / 2 - 0.02;
+    v3d.controls.maxPolarAngle = Math.PI / 2 - 0.05;
     v3d.controls.minDistance = 15;
-    v3d.controls.maxDistance = 80;
+    v3d.controls.maxDistance = 90;
     v3d.controls.autoRotate = v3d.autoRotate;
-    v3d.controls.autoRotateSpeed = 1.2;
+    v3d.controls.autoRotateSpeed = 0.8;
 
-    var ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    v3d.scene.add(ambientLight);
-    var dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    v3d.scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    var dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
     dirLight.position.set(20, 40, 20);
-    dirLight.castShadow = true;
     v3d.scene.add(dirLight);
 
-    var blockGeo = new THREE.BoxGeometry(30, 8, 30);
-    var blockMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8, metalness: 0.2 });
-    var groundBlock = new THREE.Mesh(blockGeo, blockMat);
-    groundBlock.position.y = -4;
-    v3d.scene.add(groundBlock);
+    /* Topografi (Tangkuban Parahu & Cekungan Bandung) */
+    var planeGeo = new THREE.PlaneGeometry(34, 34, 42, 42);
+    planeGeo.rotateX(-Math.PI / 2);
+    var posArr = planeGeo.attributes.position.array;
+    for (var i = 0; i < posArr.length; i += 3) {
+      var x = posArr[i], z = posArr[i + 2];
+      var distTangkuban = Math.hypot(x - (-3), z - (-10));
+      var mountain = Math.max(0, 7.5 - distTangkuban * 0.7);
+      var hills = Math.sin(x * 0.28) * Math.cos(z * 0.28) * 1.2;
+      posArr[i + 1] = mountain + hills;
+    }
+    planeGeo.computeVertexNormals();
 
-    var gridHelper = new THREE.GridHelper(30, 20, 0x38bdf8, 0x334155);
-    gridHelper.position.y = 0.01;
-    v3d.scene.add(gridHelper);
+    var terrainMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.85, flatShading: true });
+    var terrainMesh = new THREE.Mesh(planeGeo, terrainMat);
+    v3d.scene.add(terrainMesh);
 
-    var faultGeo = new THREE.BufferGeometry();
-    var faultPoints = [
-      new THREE.Vector3(-15, 0.05, -8),
-      new THREE.Vector3(-5, 0.05, -2),
-      new THREE.Vector3(0, 0.05, 0),
-      new THREE.Vector3(8, 0.05, 4),
-      new THREE.Vector3(15, 0.05, 9)
-    ];
-    faultGeo.setFromPoints(faultPoints);
-    var faultMat = new THREE.LineDashedMaterial({ color: 0xfacc15, dashSize: 1, gapSize: 0.5, linewidth: 3 });
+    var terrainWireMat = new THREE.MeshBasicMaterial({ color: 0x334155, wireframe: true, transparent: true, opacity: 0.3 });
+    var terrainWireframe = new THREE.Mesh(planeGeo, terrainWireMat);
+    terrainWireframe.position.y += 0.02;
+    v3d.scene.add(terrainWireframe);
+
+    /* Blok Kerak Bumi (Sesar Lembang Split) */
+    var blockMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.9 });
+    v3d.faultBlockLeft = new THREE.Mesh(new THREE.BoxGeometry(34, 9, 17), blockMat);
+    v3d.faultBlockLeft.position.set(0, -4.5, -8.5);
+    v3d.scene.add(v3d.faultBlockLeft);
+
+    v3d.faultBlockRight = new THREE.Mesh(new THREE.BoxGeometry(34, 9, 17), blockMat);
+    v3d.faultBlockRight.position.set(0, -4.5, 8.5);
+    v3d.scene.add(v3d.faultBlockRight);
+
+    /* Garis Patahan Sesar Lembang (Glowing Fault Line) */
+    var faultPoints = [];
+    for (var fx = -17; fx <= 17; fx += 1.5) {
+      var fz = Math.sin(fx * 0.18) * 1.6;
+      faultPoints.push(new THREE.Vector3(fx, 1.1, fz));
+    }
+    var faultGeo = new THREE.BufferGeometry().setFromPoints(faultPoints);
+    var faultMat = new THREE.LineBasicMaterial({ color: 0xfacc15, linewidth: 3 });
     v3d.faultLine3d = new THREE.Line(faultGeo, faultMat);
-    v3d.faultLine3d.computeLineDistances();
     v3d.scene.add(v3d.faultLine3d);
 
-    var epicentrumGeo = new THREE.SphereGeometry(0.6, 16, 16);
-    var epicentrumMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+    /* Pemukiman Penduduk */
+    v3d.buildingsGroup = new THREE.Group();
+    var houseGeo = new THREE.BoxGeometry(0.45, 0.55, 0.45);
+    var houseMat = new THREE.MeshStandardMaterial({ color: 0x10b981 });
+    for (var b = 0; b < 22; b++) {
+      var bx = (Math.random() - 0.5) * 26;
+      var bz = (Math.random() - 0.5) * 18 + 2;
+      var house = new THREE.Mesh(houseGeo, houseMat);
+      house.position.set(bx, 1.4, bz);
+      v3d.buildingsGroup.add(house);
+    }
+    v3d.scene.add(v3d.buildingsGroup);
 
-    v3d.hypocenter = new THREE.Mesh(epicentrumGeo, epicentrumMat);
-    v3d.hypocenter.position.set(0, -3, 0);
-    v3d.hypocenter.userData.kind = 'hypocenter';
-    v3d.scene.add(v3d.hypocenter);
+    /* Epicenter & Hypocenter */
+    var dotGeo = new THREE.SphereGeometry(0.6, 16, 16);
+    var dotMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+    var epicenter = new THREE.Mesh(dotGeo, dotMat);
+    epicenter.position.set(0, 1.15, 0);
+    v3d.scene.add(epicenter);
+    var hypocenter = new THREE.Mesh(dotGeo, dotMat);
+    hypocenter.position.set(0, -3.5, 0);
+    v3d.scene.add(hypocenter);
 
-    v3d.epicenter = new THREE.Mesh(epicentrumGeo.clone(), epicentrumMat.clone());
-    v3d.epicenter.position.set(0, 0.05, 0);
-    v3d.epicenter.userData.kind = 'epicenter';
-    v3d.scene.add(v3d.epicenter);
-
-    var verticalLineGeo = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(0, -3, 0), new THREE.Vector3(0, 0, 0)
+    var depthLineGeo = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(0, -3.5, 0), new THREE.Vector3(0, 1.15, 0)
     ]);
-    var verticalLineMat = new THREE.LineDashedMaterial({ color: 0xef4444, dashSize: 0.3, gapSize: 0.2 });
-    var verticalLine = new THREE.Line(verticalLineGeo, verticalLineMat);
-    verticalLine.computeLineDistances();
-    v3d.scene.add(verticalLine);
+    var depthLine = new THREE.Line(depthLineGeo, new THREE.LineDashedMaterial({ color: 0xef4444, dashSize: 0.4, gapSize: 0.3 }));
+    depthLine.computeLineDistances();
+    v3d.scene.add(depthLine);
 
+    /* Gelombang Seismik P & S */
     v3d.waveSpheres = [];
-    for (var i = 0; i < 3; i++) {
-      var waveGeo = new THREE.SphereGeometry(1, 32, 32);
-      var waveMat = new THREE.MeshBasicMaterial({ color: 0xf97316, transparent: true, opacity: 0.6, wireframe: true });
-      var wave = new THREE.Mesh(waveGeo, waveMat);
-      wave.position.set(0, -3, 0);
-      wave.userData = { scale: 1 + i * 5, speed: 0.12 };
+    for (var w = 0; w < 4; w++) {
+      var waveMat = new THREE.MeshBasicMaterial({
+        color: w % 2 === 0 ? 0xef4444 : 0xf97316, transparent: true, opacity: 0, wireframe: true
+      });
+      var wave = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 24), waveMat);
+      wave.position.set(0, -3.5, 0);
+      wave.userData = { scale: 1 + w * 4, speed: 0.15 };
       v3d.scene.add(wave);
       v3d.waveSpheres.push(wave);
     }
-
-    v3d.raycaster = new THREE.Raycaster();
-    v3d.mouse = new THREE.Vector2();
-    v3d.renderer.domElement.addEventListener('click', onV3DClick, false);
 
     window.addEventListener('resize', onV3DResize);
     v3d.initialized = true;
@@ -1655,13 +1678,39 @@ function initV3D(){
 function animateV3D(){
   requestAnimationFrame(animateV3D);
   if(!v3d.initialized) return;
-  var speedFactor = 0.6 + (v3d.magnitude - 4) * 0.28;
+
+  /* Rambatan gelombang seismik */
   v3d.waveSpheres.forEach(function(wave){
-    wave.userData.scale += wave.userData.speed * speedFactor;
-    if (wave.userData.scale > 20) { wave.userData.scale = 0.5; }
+    wave.userData.scale += wave.userData.speed;
+    if (wave.userData.scale > 24) { wave.userData.scale = 0.5; }
     wave.scale.set(wave.userData.scale, wave.userData.scale, wave.userData.scale);
-    wave.material.opacity = Math.max(0, 0.8 - (wave.userData.scale / 22));
+    wave.material.opacity = Math.max(0, 0.75 - (wave.userData.scale / 25));
   });
+
+  /* Animasi saat gempa dipicu */
+  if (v3d.isQuaking && v3d.quakeIntensity > 0) {
+    v3d.camera.position.x += (Math.random() - 0.5) * v3d.quakeIntensity;
+    v3d.camera.position.y += (Math.random() - 0.5) * v3d.quakeIntensity;
+
+    v3d.buildingsGroup.children.forEach(function(house){
+      house.position.y = 1.4 + Math.sin(Date.now() * 0.05 + house.position.x) * (v3d.quakeIntensity * 0.3);
+    });
+
+    v3d.faultBlockLeft.position.x = Math.sin(Date.now() * 0.02) * (v3d.quakeIntensity * 0.5);
+    v3d.faultBlockRight.position.x = -Math.sin(Date.now() * 0.02) * (v3d.quakeIntensity * 0.5);
+
+    v3d.quakeIntensity *= 0.95;
+
+    if (v3d.quakeIntensity < 0.01) {
+      v3d.isQuaking = false;
+      v3d.faultBlockLeft.position.x = 0;
+      v3d.faultBlockRight.position.x = 0;
+      v3d.buildingsGroup.children.forEach(function(h){ h.position.y = 1.4; });
+      var statusEl = document.getElementById('hud-status');
+      if(statusEl){ statusEl.textContent = 'NORMAL'; statusEl.style.color = '#10b981'; }
+    }
+  }
+
   v3d.controls.update();
   v3d.renderer.render(v3d.scene, v3d.camera);
 }
@@ -1675,58 +1724,37 @@ function onV3DResize(){
   v3d.renderer.setSize(width, height);
 }
 
+/* Trigger Gempa dengan pengaruh skala magnitudo */
+function triggerGempaLembang(){
+  if(!v3d.initialized) return;
+  var magVal = parseFloat(document.getElementById('magnitude-select').value);
+
+  v3d.isQuaking = true;
+  v3d.quakeIntensity = (magVal - 4.0) * 0.22;
+
+  var statusEl = document.getElementById('hud-status');
+  if(statusEl){ statusEl.textContent = 'GEMPA TERJADI!'; statusEl.style.color = '#ef4444'; }
+  var magEl = document.getElementById('hud-mag');
+  if(magEl){ magEl.textContent = 'M ' + magVal.toFixed(1); }
+
+  v3d.waveSpheres.forEach(function(wave, idx){
+    wave.userData.scale = 0.5 + idx * 2.5;
+    wave.userData.speed = 0.12 + (magVal * 0.015);
+  });
+}
+
 function resetVisual3D(){
   if(!v3d.initialized) return;
   v3d.camera.position.set(v3dInitialCameraPos.x, v3dInitialCameraPos.y, v3dInitialCameraPos.z);
   v3d.controls.target.set(0, 0, 0);
   v3d.controls.update();
-  closeV3DInfo();
 }
 
 function toggleAutoRotate3D(){
   v3d.autoRotate = !v3d.autoRotate;
-  var btn = document.getElementById('v3d-autorotate-btn');
   if(v3d.controls) v3d.controls.autoRotate = v3d.autoRotate;
-  btn.textContent = v3d.autoRotate ? '⏸️ Jeda Putar' : '▶️ Putar Otomatis';
-}
-
-function toggleFaultLine3D(){
-  v3d.faultVisible = !v3d.faultVisible;
-  var btn = document.getElementById('v3d-fault-btn');
-  if(v3d.faultLine3d) v3d.faultLine3d.visible = v3d.faultVisible;
-  btn.textContent = v3d.faultVisible ? '〰️ Sembunyikan Sesar' : '〰️ Tampilkan Sesar';
-}
-
-function updateMagnitude3D(val){
-  v3d.magnitude = parseFloat(val);
-  document.getElementById('v3d-mag-value').textContent = 'M ' + v3d.magnitude.toFixed(1).replace('.', ',');
-}
-
-var v3dInfoData = {
-  hypocenter: { title:'Hiposentrum', text:'Titik di dalam bumi tempat gempa sesungguhnya berawal — sumber pelepasan energi di sepanjang bidang sesar.' },
-  epicenter: { title:'Episentrum', text:'Titik di permukaan bumi yang tepat berada di atas hiposentrum — biasanya lokasi dengan guncangan paling kuat.' }
-};
-function onV3DClick(event){
-  if(!v3d.initialized) return;
-  var rect = v3d.renderer.domElement.getBoundingClientRect();
-  v3d.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-  v3d.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-  v3d.raycaster.setFromCamera(v3d.mouse, v3d.camera);
-  var targets = [v3d.hypocenter, v3d.epicenter].filter(Boolean);
-  var hits = v3d.raycaster.intersectObjects(targets);
-  if(hits.length > 0){
-    var kind = hits[0].object.userData.kind;
-    var data = v3dInfoData[kind];
-    if(data) showV3DInfo(data.title, data.text);
-  }
-}
-function showV3DInfo(title, text){
-  document.getElementById('v3d-info-title').textContent = title;
-  document.getElementById('v3d-info-text').textContent = text;
-  document.getElementById('v3d-info-box').classList.add('show');
-}
-function closeV3DInfo(){
-  document.getElementById('v3d-info-box').classList.remove('show');
+  var btn = document.getElementById('v3d-autorotate-btn');
+  if(btn) btn.innerHTML = v3d.autoRotate ? '⏸️ Jeda Putar' : '▶️ Putar Otomatis';
 }
 
 window.addEventListener('load', function(){
